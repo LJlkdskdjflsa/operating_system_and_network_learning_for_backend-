@@ -15,7 +15,7 @@ After completing this course, you will be able to:
 
 ## How to Use
 
-![How to solve problems in main.rs](image.png)
+![How to solve problems in main.rs](image-1.png)
 
 ---
 
