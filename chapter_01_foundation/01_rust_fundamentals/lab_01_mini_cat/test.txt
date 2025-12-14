@@ -1,0 +1,10 @@
+This is line one, just a normal line.
+Here comes an error message.
+Everything looks fine here.
+Another error occurred in the system.
+Debug information follows.
+Warning: something might be wrong.
+Critical error: system failure!
+The process completed successfully.
+No issues found in this line.
+Final error report generated.
