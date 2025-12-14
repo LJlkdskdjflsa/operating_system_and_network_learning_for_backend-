@@ -1,0 +1,4 @@
+# Rust build outputs (applies to all labs)
+**/target/
+**/debug/
+

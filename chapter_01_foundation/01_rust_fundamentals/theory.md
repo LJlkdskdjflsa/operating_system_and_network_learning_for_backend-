@@ -1,130 +1,130 @@
-# 1.1 Rust 強化：後端必備的語言能力
+# 1.1 Rust Core: Essential Language Skills for Backend
 
-## 本節目標
+## Section Goals
 
-> 掌握 Rust 中與「系統程式設計」和「並行處理」最相關的核心概念
+> Master Rust's core concepts most relevant to "systems programming" and "concurrency"
 
-完成本節後，你將能夠：
+After completing this section, you will be able to:
 
-- 用所有權系統寫出記憶體安全的程式
-- 正確處理錯誤而不 panic
-- 寫出安全的多執行緒程式
+- Write memory-safe programs using the ownership system
+- Handle errors properly without panicking
+- Write safe multithreaded programs
 
 ---
 
-## 1. 所有權 (Ownership)
+## 1. Ownership
 
-### 為什麼要學這個？
+### Why Learn This?
 
-在 C/C++ 中，記憶體管理是 bug 的溫床：
+In C/C++, memory management is a breeding ground for bugs:
 
-- **Use after free**：記憶體釋放後還在用
-- **Double free**：同一塊記憶體釋放兩次
-- **Memory leak**：忘記釋放記憶體
+- **Use after free**: Using memory after it's been freed
+- **Double free**: Freeing the same memory twice
+- **Memory leak**: Forgetting to free memory
 
-Rust 透過「所有權」在 **編譯期** 就擋住這些問題。
+Rust blocks these problems at **compile time** through "ownership".
 
-### 核心規則（只有三條）
+### Core Rules (Only Three)
 
 ```rust
-// 規則 1: 每個值都有一個「所有者」(owner)
-let s1 = String::from("hello");  // s1 是 "hello" 的所有者
+// Rule 1: Every value has one "owner"
+let s1 = String::from("hello");  // s1 is the owner of "hello"
 
-// 規則 2: 同一時間只能有一個所有者
-let s2 = s1;                     // 所有權轉移 (move) 給 s2
-// println!("{}", s1);           // 編譯錯誤！s1 已經無效
+// Rule 2: Only one owner at a time
+let s2 = s1;                     // Ownership transferred (move) to s2
+// println!("{}", s1);           // Compile error! s1 is no longer valid
 
-// 規則 3: 所有者離開作用域時，值會被丟棄 (drop)
+// Rule 3: When owner goes out of scope, value is dropped
 {
     let s3 = String::from("world");
-}   // s3 離開作用域，記憶體自動釋放
+}   // s3 goes out of scope, memory automatically freed
 ```
 
-### 與 OS 的關聯
+### Relation to OS
 
-當你 `drop` 一個擁有系統資源的物件時（如 `File`），Rust 會自動呼叫 `close()` system call：
+When you `drop` an object holding system resources (like `File`), Rust automatically calls the `close()` system call:
 
 ```rust
 {
     let file = File::open("test.txt")?;
-    // 使用 file...
-}   // file 離開作用域 → 自動呼叫 close(fd)
+    // use file...
+}   // file goes out of scope → automatically calls close(fd)
 ```
 
-用 `strace` 可以觀察到這個行為（Lab 3 會做）。
+You can observe this behavior with `strace` (Lab 3).
 
 ---
 
-## 2. 借用 (Borrowing)
+## 2. Borrowing
 
-### 問題：如果每次傳參數都要轉移所有權？
+### Problem: What if every parameter pass requires ownership transfer?
 
 ```rust
 fn print_length(s: String) {
     println!("Length: {}", s.len());
-}   // s 被 drop
+}   // s is dropped
 
 fn main() {
     let s = String::from("hello");
     print_length(s);
-    // println!("{}", s);  // 錯誤！s 已經被 move 走了
+    // println!("{}", s);  // Error! s has been moved
 }
 ```
 
-### 解法：借用
+### Solution: Borrowing
 
 ```rust
-fn print_length(s: &String) {   // 借用，不取得所有權
+fn print_length(s: &String) {   // Borrow, don't take ownership
     println!("Length: {}", s.len());
 }
 
 fn main() {
     let s = String::from("hello");
-    print_length(&s);           // 借出去
-    println!("{}", s);          // 還能用！
+    print_length(&s);           // Lend it out
+    println!("{}", s);          // Still usable!
 }
 ```
 
-### 借用規則
+### Borrowing Rules
 
 ```rust
 let mut s = String::from("hello");
 
-// 規則 1: 可以有多個不可變借用
+// Rule 1: Can have multiple immutable borrows
 let r1 = &s;
 let r2 = &s;
 println!("{} {}", r1, r2);  // OK
 
-// 規則 2: 或者只能有一個可變借用
+// Rule 2: Or only one mutable borrow
 let r3 = &mut s;
 r3.push_str(" world");
 
-// 規則 3: 不可變和可變借用不能同時存在
-// let r4 = &s;             // 如果 r3 還在用，這會錯誤
+// Rule 3: Immutable and mutable borrows cannot coexist
+// let r4 = &s;             // If r3 is still in use, this would error
 ```
 
-### 為什麼這很重要？
+### Why Is This Important?
 
-這個規則防止了 **data race**（在並行程式中非常致命）：
+This rule prevents **data races** (extremely dangerous in concurrent programs):
 
-- 兩個執行緒同時寫同一個記憶體 → 未定義行為
-- Rust 在編譯期就不讓這種情況發生
+- Two threads writing to the same memory simultaneously → undefined behavior
+- Rust prevents this at compile time
 
 ---
 
-## 3. 生命週期 (Lifetime)
+## 3. Lifetimes
 
-### 問題：借用能活多久？
+### Problem: How long can a borrow live?
 
 ```rust
-fn longest(x: &str, y: &str) -> &str {  // 編譯錯誤！
+fn longest(x: &str, y: &str) -> &str {  // Compile error!
     if x.len() > y.len() { x } else { y }
 }
 ```
 
-編譯器不知道回傳的參照應該活多久。
+The compiler doesn't know how long the returned reference should live.
 
-### 解法：生命週期標註
+### Solution: Lifetime Annotations
 
 ```rust
 fn longest<'a>(x: &'a str, y: &'a str) -> &'a str {
@@ -132,33 +132,33 @@ fn longest<'a>(x: &'a str, y: &'a str) -> &'a str {
 }
 ```
 
-`'a` 告訴編譯器：「回傳值的生命週期與輸入參數一樣長」。
+`'a` tells the compiler: "The return value's lifetime is the same as the input parameters".
 
-### 實務心法
+### Practical Tips
 
-1. 大多數情況編譯器會自動推導（lifetime elision）
-2. 當編譯器報錯時，通常是在告訴你有潛在的懸空參照
-3. 如果生命週期標註很複雜，考慮改用 `String`（擁有所有權）
+1. Most cases the compiler infers automatically (lifetime elision)
+2. When the compiler complains, it's usually warning about potential dangling references
+3. If lifetime annotations get complex, consider using `String` (owned) instead
 
 ---
 
-## 4. 錯誤處理
+## 4. Error Handling
 
-### Rust 的錯誤處理哲學
+### Rust's Error Handling Philosophy
 
-- **可恢復錯誤**：用 `Result<T, E>`
-- **不可恢復錯誤**：用 `panic!`（程式直接崩潰）
+- **Recoverable errors**: Use `Result<T, E>`
+- **Unrecoverable errors**: Use `panic!` (program crashes immediately)
 
-後端服務幾乎都用 `Result`，因為你不希望一個錯誤就讓整個服務掛掉。
+Backend services almost always use `Result`, because you don't want one error to crash the entire service.
 
-### Result 基本用法
+### Basic Result Usage
 
 ```rust
 use std::fs::File;
 use std::io::Read;
 
 fn read_file(path: &str) -> Result<String, std::io::Error> {
-    let mut file = File::open(path)?;  // ? 會提早回傳錯誤
+    let mut file = File::open(path)?;  // ? early returns on error
     let mut content = String::new();
     file.read_to_string(&mut content)?;
     Ok(content)
@@ -172,19 +172,19 @@ fn main() {
 }
 ```
 
-### 錯誤處理的演進
+### Error Handling Evolution
 
 ```rust
-// 階段 1: 手動 match（繁瑣但清楚）
+// Stage 1: Manual match (verbose but clear)
 let file = match File::open(path) {
     Ok(f) => f,
     Err(e) => return Err(e),
 };
 
-// 階段 2: 用 ? 運算子（簡潔）
+// Stage 2: Use ? operator (concise)
 let file = File::open(path)?;
 
-// 階段 3: 用 anyhow（更靈活，推薦）
+// Stage 3: Use anyhow (more flexible, recommended)
 use anyhow::{Context, Result};
 
 fn read_config() -> Result<Config> {
@@ -196,15 +196,15 @@ fn read_config() -> Result<Config> {
 
 ---
 
-## 5. 多執行緒基礎
+## 5. Multithreading Basics
 
-### 為什麼後端需要多執行緒？
+### Why Do Backends Need Multithreading?
 
-- 利用多核 CPU
-- 平行處理多個請求
-- 執行背景任務
+- Utilize multi-core CPUs
+- Process multiple requests in parallel
+- Run background tasks
 
-### 基本的 thread spawn
+### Basic Thread Spawn
 
 ```rust
 use std::thread;
@@ -214,29 +214,29 @@ fn main() {
         println!("Hello from thread!");
     });
 
-    handle.join().unwrap();  // 等待執行緒結束
+    handle.join().unwrap();  // Wait for thread to finish
 }
 ```
 
-### 問題：如何在執行緒間共享資料？
+### Problem: How to Share Data Between Threads?
 
 ```rust
-// 這樣不行！
+// This won't work!
 let counter = 0;
 let handle = thread::spawn(|| {
-    counter += 1;  // 錯誤：不能在閉包中修改外部變數
+    counter += 1;  // Error: can't modify external variable in closure
 });
 ```
 
-### 解法 1: Arc + Mutex（共享可變狀態）
+### Solution 1: Arc + Mutex (Shared Mutable State)
 
 ```rust
 use std::sync::{Arc, Mutex};
 use std::thread;
 
 fn main() {
-    // Arc: 原子參照計數，讓多個執行緒可以共享所有權
-    // Mutex: 互斥鎖，確保同時只有一個執行緒能修改資料
+    // Arc: Atomic Reference Counting, lets multiple threads share ownership
+    // Mutex: Mutual exclusion lock, ensures only one thread can modify data at a time
     let counter = Arc::new(Mutex::new(0));
     let mut handles = vec![];
 
@@ -258,7 +258,7 @@ fn main() {
 }
 ```
 
-### 解法 2: Channel（訊息傳遞）
+### Solution 2: Channel (Message Passing)
 
 ```rust
 use std::sync::mpsc;  // multi-producer, single-consumer
@@ -276,7 +276,7 @@ fn main() {
 }
 ```
 
-複雜的案例
+Complex Example
 
 ```rust
 use std::sync::mpsc;
@@ -287,21 +287,21 @@ fn main() {
     let (tx, rx) = mpsc::channel();
     let worker_count = 3;
 
-    // 多個線程透過 channel 傳遞「狀態增量」與進度
+    // Multiple threads pass "state increments" and progress via channel
     for id in 1..=worker_count {
         let tx = tx.clone();
         thread::spawn(move || {
             for step in 1..=5 {
-                let delta = 1; // 每步累加 1，可按需調整
+                let delta = 1; // Increment by 1 each step
                 tx.send((id, step, delta)).unwrap();
                 thread::sleep(Duration::from_millis(50));
             }
-            // 線程結束時會自動 drop tx
+            // tx is automatically dropped when thread ends
         });
     }
-    drop(tx); // 主線程持有的最後一個發送端，丟棄以便迭代結束
+    drop(tx); // Drop the main thread's sender so iteration can end
 
-    // 主線程集中更新共享狀態，並在收到每個訊息時列印中間結果
+    // Main thread collects and updates shared state
     let mut state = 0;
     for (id, step, delta) in rx {
         state += delta;
@@ -314,52 +314,40 @@ fn main() {
 // recv from thread 1 step 1: delta=1 -> state=1
 // recv from thread 2 step 1: delta=1 -> state=2
 // recv from thread 3 step 1: delta=1 -> state=3
-// recv from thread 1 step 2: delta=1 -> state=4
-// recv from thread 2 step 2: delta=1 -> state=5
-// recv from thread 3 step 2: delta=1 -> state=6
-// recv from thread 1 step 3: delta=1 -> state=7
-// recv from thread 3 step 3: delta=1 -> state=8
-// recv from thread 2 step 3: delta=1 -> state=9
-// recv from thread 1 step 4: delta=1 -> state=10
-// recv from thread 3 step 4: delta=1 -> state=11
-// recv from thread 2 step 4: delta=1 -> state=12
-// recv from thread 1 step 5: delta=1 -> state=13
-// recv from thread 3 step 5: delta=1 -> state=14
-// recv from thread 2 step 5: delta=1 -> state=15
+// ...
 // Final state: 15
 ```
 
-### Arc vs Mutex vs Channel：何時用哪個？
+### Arc vs Mutex vs Channel: When to Use Which?
 
-| 場景                     | 推薦方案                               |
-| ------------------------ | -------------------------------------- |
-| 多個執行緒讀取同一份資料 | `Arc<T>`（唯讀共享）                   |
-| 多個執行緒讀寫同一份資料 | `Arc<Mutex<T>>` 或 `Arc<RwLock<T>>`    |
-| 執行緒間傳遞訊息/任務    | `mpsc::channel` 或 `crossbeam_channel` |
-| 高併發場景               | 考慮用 channel 避免鎖競爭              |
+| Scenario                            | Recommended Solution                    |
+| ----------------------------------- | --------------------------------------- |
+| Multiple threads read same data     | `Arc<T>` (read-only sharing)            |
+| Multiple threads read/write same data | `Arc<Mutex<T>>` or `Arc<RwLock<T>>`   |
+| Pass messages/tasks between threads | `mpsc::channel` or `crossbeam_channel`  |
+| High concurrency scenarios          | Consider channels to avoid lock contention |
 
 ---
 
-## 6. Async 基礎概念
+## 6. Async Basics
 
-### 為什麼需要 async？
+### Why Do We Need Async?
 
-傳統多執行緒：
+Traditional multithreading:
 
-- 每個連線一個執行緒
-- 10,000 連線 = 10,000 執行緒
-- 每個執行緒消耗 ~2MB stack → 20GB 記憶體！
+- One thread per connection
+- 10,000 connections = 10,000 threads
+- Each thread consumes ~2MB stack → 20GB memory!
 
-Async：
+Async:
 
-- 少量執行緒處理大量任務
-- 任務在等待 I/O 時讓出 CPU
-- 10,000 連線可能只需要 4-8 個執行緒
+- Few threads handle many tasks
+- Tasks yield CPU while waiting for I/O
+- 10,000 connections might only need 4-8 threads
 
-### 基本語法
+### Basic Syntax
 
 ```rust
-
 use reqwest::Error;
 
 #[tokio::main]
@@ -370,8 +358,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 
 async fn fetch_data(url: &str) -> Result<String, Error> {
-    // 這是一個非同步函式
-    let response = reqwest::get(url).await?;  // .await 會「暫停」直到完成
+    // This is an async function
+    let response = reqwest::get(url).await?;  // .await "pauses" until complete
     response.text().await
 }
 
@@ -379,50 +367,49 @@ async fn fetch_data(url: &str) -> Result<String, Error> {
 // {
 //   "origin": "36.231.189.249"
 // }
-
 ```
 
-### 關鍵概念
+### Key Concepts
 
-1. **Future**：代表一個「未來會完成的值」
-2. **async fn**：回傳一個 `Future`
-3. **.await**：暫停當前任務，等待 Future 完成
-4. **Runtime**（如 Tokio）：負責執行和調度這些 Future
+1. **Future**: Represents a "value that will complete in the future"
+2. **async fn**: Returns a `Future`
+3. **.await**: Pauses current task, waits for Future to complete
+4. **Runtime** (like Tokio): Responsible for executing and scheduling Futures
 
-### 現在只需理解這些
+### For Now, Just Understand This
 
-詳細的 async 會在後面的章節（I/O 模型）深入學習。現在只要知道：
+Detailed async will be covered in later chapters (I/O Model). For now, just know:
 
-- async 是為了高效處理大量 I/O 操作
-- Tokio 是最常用的 async runtime
-- `.await` 不會阻塞執行緒，只會暫停當前任務
+- Async is for efficiently handling large amounts of I/O operations
+- Tokio is the most commonly used async runtime
+- `.await` doesn't block the thread, it only pauses the current task
 
 ---
 
-## 小結：這些概念如何串在一起？
+## Summary: How These Concepts Connect
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│                    你的後端服務                      │
+│                 Your Backend Service                │
 ├─────────────────────────────────────────────────────┤
 │  Async Runtime (Tokio)                              │
-│    ├── Task 1: 處理 HTTP 請求                        │
-│    │     └── 用 Result 處理可能的錯誤                │
-│    ├── Task 2: 處理另一個請求                        │
-│    └── 共享狀態: Arc<RwLock<AppState>>              │
+│    ├── Task 1: Handle HTTP request                  │
+│    │     └── Use Result for error handling          │
+│    ├── Task 2: Handle another request               │
+│    └── Shared state: Arc<RwLock<AppState>>          │
 ├─────────────────────────────────────────────────────┤
-│  所有權系統確保：                                    │
-│    - 沒有 data race                                 │
-│    - 資源自動釋放（file, socket, memory）            │
-│    - 編譯期就抓出大部分並行 bug                      │
+│  Ownership system ensures:                          │
+│    - No data races                                  │
+│    - Resources auto-released (file, socket, memory) │
+│    - Most concurrency bugs caught at compile time   │
 └─────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 接下來
+## Next Steps
 
-完成理論閱讀後，請進入實作：
+After completing the theory, proceed to hands-on practice:
 
-1. **Lab 1**: 實作 mini cat/grep → 練習檔案 I/O 和錯誤處理
-2. **Lab 2**: 實作平行計算 → 練習 Arc/Mutex/Channel
+1. **Lab 1**: Implement mini cat/grep → Practice file I/O and error handling
+2. **Lab 2**: Implement parallel computation → Practice Arc/Mutex/Channel

@@ -1,286 +1,379 @@
-# OS & Network 後端實戰學習
+# OS & Network Learning for Backend
 
-> 用「學習 + 實作」的方式，把 OS / Network 打成可直接用在後端的硬功，以 Rust 為主要語言。
-
----
-
-## 學習目標
-
-完成這份教材後，你將能夠：
-
-- **系統層面**：理解程式在 OS 上如何運作（process、memory、I/O）
-- **網路層面**：理解 TCP/HTTP/TLS 的運作機制
-- **實戰能力**：能寫出高效能的後端服務，並具備診斷問題的能力
-- **Rust 熟練度**：掌握 Rust 在系統程式設計和並行處理上的應用
+> Learn OS and Network fundamentals hands-on with Rust, building practical skills for backend development.
 
 ---
 
-## 課程架構
+## Learning Objectives
+
+After completing this course, you will be able to:
+
+- **System Level**: Understand how programs run on OS (process, memory, I/O)
+- **Network Level**: Understand TCP/HTTP/TLS mechanisms
+- **Practical Skills**: Write high-performance backend services and diagnose issues
+- **Rust Proficiency**: Master Rust for systems programming and concurrency
+
+## How to Use
+
+![How to solve problems in main.rs](image.png)
+
+---
+
+## Course Structure
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│  第一章：基礎打底                                                 │
-│  Rust 核心 + Linux 環境                                          │
+│  Chapter 1: Foundation                                          │
+│  Rust Core + Linux Environment                                  │
 ├─────────────────────────────────────────────────────────────────┤
-│  第二章：OS 向                                                    │
+│  Chapter 2: OS                                                  │
 │  Process / Thread / Memory / I/O                                │
 ├─────────────────────────────────────────────────────────────────┤
-│  第三章：Network 向                                               │
+│  Chapter 3: Network                                             │
 │  TCP / HTTP / TLS / Proxy                                       │
 ├─────────────────────────────────────────────────────────────────┤
-│  第四章：綜合專案                                                 │
-│  REST 服務 + 觀測 + 調優                                         │
+│  Chapter 4: Capstone Project                                    │
+│  REST Service + Observability + Tuning                          │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 章節目錄
+## Table of Contents
 
-### [第一章：基礎打底](./chapter_01_foundation/)
-**目標**：建立 Rust 和 Linux 的基本功
+### [Chapter 1: Foundation](./chapter_01_foundation/)
 
-| 主題 | 學習內容 | 實作 |
-|------|---------|------|
-| Rust 強化 | 所有權、借用、錯誤處理、Arc/Mutex/Channel | Mini Cat/Grep、平行計算 |
-| Linux 基礎 | process、fd、syscall、/proc | strace 觀察、Mini PS |
+**Goal**: Build foundational skills in Rust and Linux
 
-### 第二章：OS 向（規劃中）
-**目標**：深入理解作業系統如何管理資源
+| Topic        | Content                                                 | Labs                        |
+| ------------ | ------------------------------------------------------- | --------------------------- |
+| Rust Core    | Ownership, Borrowing, Error Handling, Arc/Mutex/Channel | Mini Cat/Grep, Parallel Sum |
+| Linux Basics | Process, fd, syscall, /proc                             | strace Lab, Mini PS         |
 
-| 主題 | 學習內容 | 實作 |
-|------|---------|------|
-| Process & Thread | fork/exec、context switch、scheduler | 多 process vs 多 thread 比較、Thread Pool |
-| Memory | virtual memory、page fault、cache | 局部性實驗、Memory Pool |
-| I/O 模型 | blocking、non-blocking、epoll、async | Echo Server（三種版本） |
+### Chapter 2: OS (Planned)
 
-### 第三章：Network 向（規劃中）
-**目標**：掌握網路協定和工具
+**Goal**: Deep understanding of OS resource management
 
-| 主題 | 學習內容 | 實作 |
-|------|---------|------|
-| TCP/UDP | 三次握手、流量控制、TIME_WAIT | Chat Server、UDP Echo |
-| HTTP | request/response、keep-alive、HTTP/2 | 手刻 HTTP Server、用 Axum 重寫 |
-| TLS & Proxy | 握手流程、cert、reverse proxy | HTTPS Server、Load Balancer |
+| Topic            | Content                              | Labs                                      |
+| ---------------- | ------------------------------------ | ----------------------------------------- |
+| Process & Thread | fork/exec, context switch, scheduler | Process vs Thread comparison, Thread Pool |
+| Memory           | Virtual memory, page fault, cache    | Locality experiment, Memory Pool          |
+| I/O Model        | Blocking, non-blocking, epoll, async | Echo Server (three versions)              |
 
-### 第四章：綜合專案（規劃中）
-**目標**：整合所有知識，建立可展示的專案
+### Chapter 3: Network (Planned)
 
-| 主題 | 學習內容 | 實作 |
-|------|---------|------|
-| REST 服務 | JSON API、結構化錯誤、logging | CRUD API with Axum |
-| 觀測 | tracing、Prometheus metrics | 加入 /metrics endpoint |
-| 調優 | 壓測、分析、調參 | wrk 壓測 + htop/strace 分析 |
+**Goal**: Master network protocols and tools
+
+| Topic       | Content                                      | Labs                                  |
+| ----------- | -------------------------------------------- | ------------------------------------- |
+| TCP/UDP     | Three-way handshake, flow control, TIME_WAIT | Chat Server, UDP Echo                 |
+| HTTP        | Request/response, keep-alive, HTTP/2         | Handcrafted HTTP Server, Axum rewrite |
+| TLS & Proxy | Handshake, certificates, reverse proxy       | HTTPS Server, Load Balancer           |
+
+### Chapter 4: Capstone Project (Planned)
+
+**Goal**: Integrate all knowledge into a demonstrable project
+
+| Topic         | Content                              | Labs                               |
+| ------------- | ------------------------------------ | ---------------------------------- |
+| REST Service  | JSON API, structured errors, logging | CRUD API with Axum                 |
+| Observability | Tracing, Prometheus metrics          | Add /metrics endpoint              |
+| Tuning        | Load testing, analysis, tuning       | wrk testing + htop/strace analysis |
 
 ---
 
-## 環境需求
+## Requirements
 
-### 必要
-- **Rust** 1.70+（建議用 [rustup](https://rustup.rs/) 安裝）
-- **Linux 環境**（以下任一）：
-  - 原生 Linux
-  - WSL2（Windows）
+### Required
+
+- **Rust** 1.70+ (recommended: install via [rustup](https://rustup.rs/))
+- **Linux Environment** (any of):
+  - Native Linux
+  - WSL2 (Windows)
   - Docker
-  - 雲端 VM
+  - Cloud VM
 
-### 建議
-- **編輯器**：VS Code + rust-analyzer
-- **終端工具**：htop, strace, ss
+### Recommended
 
-### 安裝檢查
+- **Editor**: VS Code + rust-analyzer
+- **Terminal Tools**: htop, strace, ss
+
+### Installation Check
 
 ```bash
 # Rust
-rustc --version    # 應該 >= 1.70
+rustc --version    # Should be >= 1.70
 cargo --version
 
-# Linux 工具（在 Linux 環境執行）
+# Linux tools (run in Linux environment)
 which strace htop ss
 ```
 
 ---
 
-## 如何使用這份教材
+## How to Use This Course
 
-### 學習流程
+### Learning Flow
 
 ```
-1. 閱讀 theory.md          # 理解概念
+1. Read theory.md              # Understand concepts
         ↓
-2. 完成 Lab 實作            # 動手做
+2. Open Lab's src/main.rs      # See requirements
         ↓
-3. 用 checkpoint.md 驗收   # 確認理解
+3. Implement yourself          # Write code
         ↓
-4. 進入下一章
+4. cargo test                  # Verify results
+        ↓
+5. Check solution/main.rs      # Compare with answer
+        ↓
+6. Use checkpoint.md           # Confirm understanding
 ```
 
-### 每個 Lab 的結構
+### Lab Structure
+
+Each Lab follows the "Problem → Solve → Verify → Compare" pattern:
 
 ```
 lab_xx_name/
-├── README.md      # 實作指南（目標、步驟、提示）
-├── Cargo.toml     # 依賴設定
+├── problem/
+│   └── main.rs        ← Original problem (keep unchanged, copy back to src/ to redo)
 ├── src/
-│   └── main.rs    # 起始程式碼
-└── test.txt       # 測試資料（如果需要）
+│   └── main.rs        ← Your workspace (write code here)
+├── solution/
+│   └── main.rs        ← Reference answer (check after completing)
+├── tests/
+│   └── test_xxx.rs    ← Automated tests (verify your implementation)
+├── Cargo.toml
+├── README.md          ← Detailed instructions
+└── test.txt           ← Test data (if needed)
 ```
 
-### 執行 Lab
+### Problem Format
+
+Open `src/main.rs` and you'll see:
+
+```rust
+//! ## Goal
+//! Implement a XXX tool
+//!
+//! ## Requirements
+//! 1. Feature A
+//! 2. Feature B
+//!
+//! ## Verification
+//! cargo test
+//!
+//! ## Acceptance Criteria
+//! - [ ] Criterion 1
+//! - [ ] Criterion 2
+
+fn main() {
+    // TODO: Your implementation
+}
+```
+
+### Verify Your Implementation
 
 ```bash
-# 進入 Lab 目錄
+# Enter Lab directory
 cd chapter_01_foundation/01_rust_fundamentals/lab_01_mini_cat
 
-# 執行
-cargo run -- test.txt
-
-# 執行測試
+# 1. Run automated tests (most important!)
 cargo test
 
-# Release build（效能測試用）
-cargo build --release
-./target/release/mini_cat test.txt
+# 2. Manual testing
+cargo run -- test.txt
+cargo run -- test.txt error
+cargo run -- test.txt error -n
+
+# 3. After tests pass, compare with reference answer
+cat solution/main.rs
+```
+
+### Test Results
+
+```bash
+# All passed
+running 5 tests
+test test_01_read_file ... ok
+test test_02_filter_pattern ... ok
+test test_03_line_numbers ... ok
+test test_04_file_not_found ... ok
+test test_05_filter_with_line_numbers ... ok
+
+# Some failed (keep working)
+test test_02_filter_pattern ... FAILED
+```
+
+### Redo a Lab
+
+Want to retry a Lab? Copy the original problem back to src/:
+
+```bash
+# Reset to original state
+cp problem/main.rs src/main.rs
+
+# Start fresh
+cargo test  # Should fail since not implemented yet
 ```
 
 ---
 
-## 學習原則
+## Learning Principles
 
-### 1. 理論要能對應到實作
-每個概念都要能「看到它發生」。例如：
-- 學了 syscall → 用 strace 看到 `open`, `read`, `write`
-- 學了所有權 → 用 strace 看到 `close` 在 drop 時被呼叫
+### 1. Theory Must Connect to Practice
 
-### 2. 先手刻，再用框架
-- 先手刻 HTTP server → 再用 Axum
-- 先手寫 Thread Pool → 再用 Rayon
-- 這樣你會更懂框架在幫你做什麼
+Every concept should be "visible". For example:
 
-### 3. 觀察系統行為
-養成習慣用這些工具觀察你的程式：
-- `htop`：CPU、記憶體、執行緒
-- `strace`：system call
-- `ss`：網路連線
-- `/proc`：程序狀態
+- Learned syscall → Use strace to see `open`, `read`, `write`
+- Learned ownership → Use strace to see `close` called on drop
 
----
+### 2. Handcraft First, Then Use Frameworks
 
-## 學習進度追蹤
+- Handcraft HTTP server → Then use Axum
+- Handwrite Thread Pool → Then use Rayon
+- This way you understand what frameworks do for you
 
-> 完成後打勾 `[x]`，記錄你的學習進度！
+### 3. Observe System Behavior
 
-### 第一章：基礎打底
+Build habits of observing your programs with these tools:
 
-**1.1 Rust 強化**
-- [ ] 閱讀 `01_rust_fundamentals/theory.md`
-- [ ] 完成 Lab 1: Mini Cat/Grep
-- [ ] 完成 Lab 2: 平行計算
-- [ ] 理解所有權、借用、生命週期
-- [ ] 理解 Arc/Mutex/Channel 的使用場景
-
-**1.2 Linux 基礎**
-- [ ] 閱讀 `02_linux_basics/theory.md`
-- [ ] 完成 Lab 3: strace 觀察
-- [ ] 完成 Lab 4: Mini PS
-- [ ] 會用 strace 追蹤程式
-- [ ] 理解 /proc 虛擬檔案系統
-
-**第一章驗收**
-- [ ] 完成 `checkpoint.md` 的自我測驗
-- [ ] 能解釋「程式碼 ↔ syscall」的對應關係
+- `htop`: CPU, memory, threads
+- `strace`: System calls
+- `ss`: Network connections
+- `/proc`: Process state
 
 ---
 
-### 第二章：OS 向（規劃中）
+## Progress Tracking
+
+> Mark completed items with `[x]`!
+
+### Chapter 1: Foundation
+
+**1.1 Rust Core**
+
+- [x] Read `01_rust_fundamentals/theory.md`
+- [ ] Complete Lab 1: Mini Cat/Grep
+- [ ] Complete Lab 2: Parallel Sum
+- [ ] Understand ownership, borrowing, lifetimes
+- [ ] Understand Arc/Mutex/Channel use cases
+
+**1.2 Linux Basics**
+
+- [ ] Read `02_linux_basics/theory.md`
+- [ ] Complete Lab 3: strace observation
+- [ ] Complete Lab 4: Mini PS
+- [ ] Can use strace to trace programs
+- [ ] Understand /proc virtual filesystem
+
+**Chapter 1 Checkpoint**
+
+- [ ] Complete `checkpoint.md` self-assessment
+- [ ] Can explain "code ↔ syscall" correspondence
+
+---
+
+### Chapter 2: OS (Planned)
 
 **2.1 Process & Thread**
-- [ ] 閱讀理論
-- [ ] 完成 Lab: 多 process vs 多 thread 比較
-- [ ] 完成 Lab: Thread Pool
+
+- [ ] Read theory
+- [ ] Complete Lab: Process vs Thread comparison
+- [ ] Complete Lab: Thread Pool
 
 **2.2 Memory**
-- [ ] 閱讀理論
-- [ ] 完成 Lab: 局部性實驗
-- [ ] 完成 Lab: Memory Pool
 
-**2.3 I/O 模型**
-- [ ] 閱讀理論
-- [ ] 完成 Lab: Blocking Echo Server
-- [ ] 完成 Lab: Non-blocking (mio) Echo Server
-- [ ] 完成 Lab: Async (Tokio) Echo Server
+- [ ] Read theory
+- [ ] Complete Lab: Locality experiment
+- [ ] Complete Lab: Memory Pool
+
+**2.3 I/O Model**
+
+- [ ] Read theory
+- [ ] Complete Lab: Blocking Echo Server
+- [ ] Complete Lab: Non-blocking (mio) Echo Server
+- [ ] Complete Lab: Async (Tokio) Echo Server
 
 ---
 
-### 第三章：Network 向（規劃中）
+### Chapter 3: Network (Planned)
 
 **3.1 TCP/UDP**
-- [ ] 閱讀理論
-- [ ] 完成 Lab: TCP Chat Server
-- [ ] 完成 Lab: UDP Echo
-- [ ] 用 tcpdump/Wireshark 觀察封包
+
+- [ ] Read theory
+- [ ] Complete Lab: TCP Chat Server
+- [ ] Complete Lab: UDP Echo
+- [ ] Use tcpdump/Wireshark to observe packets
 
 **3.2 HTTP**
-- [ ] 閱讀理論
-- [ ] 完成 Lab: 手刻 HTTP Server
-- [ ] 完成 Lab: 用 Axum 重寫
+
+- [ ] Read theory
+- [ ] Complete Lab: Handcrafted HTTP Server
+- [ ] Complete Lab: Axum rewrite
 
 **3.3 TLS & Proxy**
-- [ ] 閱讀理論
-- [ ] 完成 Lab: HTTPS Server
-- [ ] 完成 Lab: Reverse Proxy
-- [ ] 完成 Lab: Load Balancer
+
+- [ ] Read theory
+- [ ] Complete Lab: HTTPS Server
+- [ ] Complete Lab: Reverse Proxy
+- [ ] Complete Lab: Load Balancer
 
 ---
 
-### 第四章：綜合專案（規劃中）
+### Chapter 4: Capstone Project (Planned)
 
-**4.1 REST 服務**
-- [ ] 實作 CRUD API
-- [ ] 加入結構化錯誤處理
-- [ ] 加入 logging (tracing)
+**4.1 REST Service**
 
-**4.2 觀測**
-- [ ] 加入 Prometheus metrics
-- [ ] 暴露 /metrics endpoint
+- [ ] Implement CRUD API
+- [ ] Add structured error handling
+- [ ] Add logging (tracing)
 
-**4.3 調優**
-- [ ] 用 wrk 壓測
-- [ ] 用 htop/strace 分析
-- [ ] 記錄調優結論
+**4.2 Observability**
 
----
+- [ ] Add Prometheus metrics
+- [ ] Expose /metrics endpoint
 
-### 總進度
+**4.3 Tuning**
 
-| 章節 | 狀態 | 完成日期 |
-|------|------|---------|
-| 第一章：基礎打底 | 🔄 進行中 | |
-| 第二章：OS 向 | ⏳ 等待中 | |
-| 第三章：Network 向 | ⏳ 等待中 | |
-| 第四章：綜合專案 | ⏳ 等待中 | |
+- [ ] Load test with wrk
+- [ ] Analyze with htop/strace
+- [ ] Document tuning conclusions
 
 ---
 
-## 參考資源
+### Overall Progress
 
-### 書籍
+| Chapter               | Status         | Completion Date |
+| --------------------- | -------------- | --------------- |
+| Chapter 1: Foundation | 🔄 In Progress |                 |
+| Chapter 2: OS         | ⏳ Pending     |                 |
+| Chapter 3: Network    | ⏳ Pending     |                 |
+| Chapter 4: Capstone   | ⏳ Pending     |                 |
+
+---
+
+## References
+
+### Books
+
 - [The Rust Programming Language](https://doc.rust-lang.org/book/)
 - [Rust by Example](https://doc.rust-lang.org/rust-by-example/)
 - [Linux System Programming](https://www.oreilly.com/library/view/linux-system-programming/9781449341527/)
 
-### 線上資源
+### Online Resources
+
 - [Tokio Tutorial](https://tokio.rs/tokio/tutorial)
 - [Beej's Guide to Network Programming](https://beej.us/guide/bgnet/)
 
-### 工具文件
+### Tool Documentation
+
 - `man strace`
 - `man proc`
 - `man 2 syscalls`
 
 ---
 
-## 授權
+## License
 
-本教材僅供個人學習使用。
-# operating_system_and_network_learning_for_backend-
+This course material is for personal learning only.
