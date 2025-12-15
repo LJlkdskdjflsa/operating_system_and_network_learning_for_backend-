@@ -10,6 +10,8 @@ After completing this course, you will be able to:
 
 - **System Level**: Understand how programs run on OS (process, memory, I/O)
 - **Network Level**: Understand TCP/HTTP/TLS mechanisms
+- **Database Level**: Work with SQL databases and caching
+- **Distributed Systems**: Implement common patterns (rate limiting, circuit breaker)
 - **Practical Skills**: Write high-performance backend services and diagnose issues
 - **Rust Proficiency**: Master Rust for systems programming and concurrency
 
@@ -32,8 +34,14 @@ After completing this course, you will be able to:
 │  Chapter 3: Network                                             │
 │  TCP / HTTP / TLS / Proxy                                       │
 ├─────────────────────────────────────────────────────────────────┤
-│  Chapter 4: Capstone Project                                    │
-│  REST Service + Observability + Tuning                          │
+│  Chapter 4: Database                                            │
+│  SQL / Connection Pool / Caching / Redis                        │
+├─────────────────────────────────────────────────────────────────┤
+│  Chapter 5: Distributed Patterns                                │
+│  Messaging / Rate Limiting / Circuit Breaker                    │
+├─────────────────────────────────────────────────────────────────┤
+│  Chapter 6: Capstone Project                                    │
+│  REST Service + Observability + Performance                     │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -50,7 +58,7 @@ After completing this course, you will be able to:
 | Rust Core    | Ownership, Borrowing, Error Handling, Arc/Mutex/Channel | Mini Cat/Grep, Parallel Sum |
 | Linux Basics | Process, fd, syscall, /proc                             | strace Lab, Mini PS         |
 
-### Chapter 2: OS (Planned)
+### [Chapter 2: OS](./chapter_02_os/)
 
 **Goal**: Deep understanding of OS resource management
 
@@ -60,7 +68,7 @@ After completing this course, you will be able to:
 | Memory           | Virtual memory, page fault, cache    | Locality experiment, Memory Pool          |
 | I/O Model        | Blocking, non-blocking, epoll, async | Echo Server (three versions)              |
 
-### Chapter 3: Network (Planned)
+### [Chapter 3: Network](./chapter_03_network/)
 
 **Goal**: Master network protocols and tools
 
@@ -70,15 +78,33 @@ After completing this course, you will be able to:
 | HTTP        | Request/response, keep-alive, HTTP/2         | Handcrafted HTTP Server, Axum rewrite |
 | TLS & Proxy | Handshake, certificates, reverse proxy       | HTTPS Server, Load Balancer           |
 
-### Chapter 4: Capstone Project (Planned)
+### [Chapter 4: Database](./chapter_04_database/)
+
+**Goal**: Master database operations and caching
+
+| Topic   | Content                                     | Labs                              |
+| ------- | ------------------------------------------- | --------------------------------- |
+| SQL     | SQLx, type-safe queries, connection pooling | CRUD Operations, Connection Pool  |
+| Caching | Cache strategies, TTL, invalidation         | Redis Basics, Cache-Aside Pattern |
+
+### [Chapter 5: Distributed Patterns](./chapter_05_distributed/)
+
+**Goal**: Implement common distributed system patterns
+
+| Topic      | Content                                | Labs                               |
+| ---------- | -------------------------------------- | ---------------------------------- |
+| Messaging  | Channels, pub/sub, message queues      | Channel Patterns, Simple Queue     |
+| Resilience | Rate limiting, circuit breaker, retry  | Token Bucket, Circuit Breaker      |
+
+### [Chapter 6: Capstone Project](./chapter_06_project/)
 
 **Goal**: Integrate all knowledge into a demonstrable project
 
 | Topic         | Content                              | Labs                               |
 | ------------- | ------------------------------------ | ---------------------------------- |
-| REST Service  | JSON API, structured errors, logging | CRUD API with Axum                 |
-| Observability | Tracing, Prometheus metrics          | Add /metrics endpoint              |
-| Tuning        | Load testing, analysis, tuning       | wrk testing + htop/strace analysis |
+| REST Service  | JSON API, structured errors, logging | CRUD API with Axum, DB Integration |
+| Observability | Tracing, Prometheus metrics          | Structured Logging, Metrics Export |
+| Performance   | Load testing, analysis, tuning       | Custom Load Tester                 |
 
 ---
 
@@ -253,7 +279,7 @@ Build habits of observing your programs with these tools:
 
 **1.1 Rust Core**
 
-- [x] Read `01_rust_fundamentals/theory.md`
+- [ ] Read `01_rust_fundamentals/theory.md`
 - [ ] Complete Lab 1: Mini Cat/Grep
 - [ ] Complete Lab 2: Parallel Sum
 - [ ] Understand ownership, borrowing, lifetimes
@@ -274,7 +300,7 @@ Build habits of observing your programs with these tools:
 
 ---
 
-### Chapter 2: OS (Planned)
+### Chapter 2: OS
 
 **2.1 Process & Thread**
 
@@ -297,7 +323,7 @@ Build habits of observing your programs with these tools:
 
 ---
 
-### Chapter 3: Network (Planned)
+### Chapter 3: Network
 
 **3.1 TCP/UDP**
 
@@ -321,35 +347,70 @@ Build habits of observing your programs with these tools:
 
 ---
 
-### Chapter 4: Capstone Project (Planned)
+### Chapter 4: Database
 
-**4.1 REST Service**
+**4.1 SQL**
 
-- [ ] Implement CRUD API
-- [ ] Add structured error handling
-- [ ] Add logging (tracing)
+- [ ] Read theory
+- [ ] Complete Lab: SQLx CRUD
+- [ ] Complete Lab: Connection Pool
 
-**4.2 Observability**
+**4.2 Caching**
 
-- [ ] Add Prometheus metrics
-- [ ] Expose /metrics endpoint
+- [ ] Read theory
+- [ ] Complete Lab: Redis Basics
+- [ ] Complete Lab: Cache Patterns
 
-**4.3 Tuning**
+---
 
-- [ ] Load test with wrk
-- [ ] Analyze with htop/strace
-- [ ] Document tuning conclusions
+### Chapter 5: Distributed Patterns
+
+**5.1 Messaging**
+
+- [ ] Read theory
+- [ ] Complete Lab: Channel Patterns
+- [ ] Complete Lab: Simple Queue
+
+**5.2 Resilience Patterns**
+
+- [ ] Read theory
+- [ ] Complete Lab: Rate Limiter
+- [ ] Complete Lab: Circuit Breaker
+
+---
+
+### Chapter 6: Capstone Project
+
+**6.1 REST Service**
+
+- [ ] Read theory
+- [ ] Complete Lab: Axum CRUD API
+- [ ] Complete Lab: Database Integration
+
+**6.2 Observability**
+
+- [ ] Read theory
+- [ ] Complete Lab: Structured Logging (Tracing)
+- [ ] Complete Lab: Prometheus Metrics
+
+**6.3 Performance**
+
+- [ ] Read theory
+- [ ] Complete Lab: Load Testing Tool
+- [ ] Document performance analysis
 
 ---
 
 ### Overall Progress
 
-| Chapter               | Status         | Completion Date |
-| --------------------- | -------------- | --------------- |
-| Chapter 1: Foundation | 🔄 In Progress |                 |
-| Chapter 2: OS         | ⏳ Pending     |                 |
-| Chapter 3: Network    | ⏳ Pending     |                 |
-| Chapter 4: Capstone   | ⏳ Pending     |                 |
+| Chapter                        | Status      | Completion Date |
+| ------------------------------ | ----------- | --------------- |
+| Chapter 1: Foundation          | ✅ Available |                 |
+| Chapter 2: OS                  | ✅ Available |                 |
+| Chapter 3: Network             | ✅ Available |                 |
+| Chapter 4: Database            | ✅ Available |                 |
+| Chapter 5: Distributed         | ✅ Available |                 |
+| Chapter 6: Capstone            | ✅ Available |                 |
 
 ---
 
