@@ -279,11 +279,11 @@ Build habits of observing your programs with these tools:
 
 **1.1 Rust Core**
 
-- [ ] Read `01_rust_fundamentals/theory.md`
-- [ ] Complete Lab 1: Mini Cat/Grep
-- [ ] Complete Lab 2: Parallel Sum
-- [ ] Understand ownership, borrowing, lifetimes
-- [ ] Understand Arc/Mutex/Channel use cases
+- [x] Read `01_rust_fundamentals/theory.md`
+- [x] Complete Lab 1: Mini Cat/Grep
+- [x] Complete Lab 2: Parallel Sum
+- [x] Understand ownership, borrowing, lifetimes
+- [x] Understand Arc/Mutex/Channel use cases
 
 **1.2 Linux Basics**
 

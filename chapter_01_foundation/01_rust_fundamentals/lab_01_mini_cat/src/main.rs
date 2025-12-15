@@ -30,10 +30,10 @@
 //!
 //! Check solution/main.rs after completing
 
-use anyhow::Result;
+use anyhow::{Context, Result};
 use std::env;
 use std::fs::File;
-use std::io::{self, BufRead, BufReader};
+use std::io::{BufRead, BufReader};
 
 fn main() -> Result<()> {
     let args: Vec<String> = env::args().collect();
@@ -63,11 +63,13 @@ fn main() -> Result<()> {
         }
     }
 
-    let file = File::open(file_name)?;
+    let file = File::open(file_name)
+        .with_context(|| format!("Failed to open file: {file_name}"))?;
     let reader = BufReader::new(file);
     // lines() returns an Iterator<Item = io::Result<String>>
     for (line_number, line_result) in reader.lines().enumerate() {
-        let line = line_result?;
+        let line = line_result
+            .with_context(|| format!("Error reading line {}", line_number + 1))?;
 
         if let Some(keyword_internal) = keyword {
             // When a keyword is provided, only print matching lines (case-insensitive)

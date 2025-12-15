@@ -5,3 +5,7 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1.0"
+
+[[bin]]
+name = "solution"
+path = "solution/main.rs"

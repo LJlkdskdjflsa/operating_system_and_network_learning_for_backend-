@@ -202,6 +202,23 @@ fn sum_with_channel(n: u64, num_threads: usize) -> u64 {
 2. 記錄每個版本的執行時間
 3. 觀察 speedup 曲線
 
+### 觀察模式（讓程式跑久一點）
+
+如果你想用 `top/htop/ps` 觀察 thread 行為，可以開啟觀察模式，程式會：
+- 把 `N` 預設拉大（也可用環境變數覆寫）
+- 在每個 worker 任務開始時 `sleep` 一下（避免瞬間跑完）
+- 使用較「不易被最佳化成公式」的加總方式（方便看到 CPU 工作）
+
+```bash
+OBSERVE=1 cargo run --release
+
+# 自訂 N / sleep 毫秒數
+OBSERVE=1 N=50000000 SLEEP_MS=200 cargo run --release
+
+# 控制 Rayon thread 數（可選）
+OBSERVE=1 RAYON_NUM_THREADS=8 cargo run --release
+```
+
 ### 預期輸出
 
 ```
@@ -281,10 +298,10 @@ fn sum_with_rayon(n: u64) -> u64 {
 
 ## 驗收標準
 
-- [ ] 單執行緒版本正確計算結果
-- [ ] Arc + Mutex 版本正確運作
-- [ ] Channel 版本正確運作
-- [ ] 有做效能比較並記錄結果
+- [x] 單執行緒版本正確計算結果
+- [x] Arc + Mutex 版本正確運作
+- [x] Channel 版本正確運作
+- [x] 有做效能比較並記錄結果
 - [ ] 能解釋 Arc、Mutex、Channel 各自的用途
 
 ---

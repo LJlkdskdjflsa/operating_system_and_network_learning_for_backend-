@@ -5,4 +5,4 @@ edition = "2021"
 
 [dependencies]
 # 進階挑戰才需要
-# rayon = "1.10"
+rayon = "1.10"
