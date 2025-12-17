@@ -5,6 +5,7 @@
 > 透過 strace 觀察 Rust 程式的 system call，建立「程式碼 ↔ syscall」的對應關係
 
 完成後你將學會：
+
 - 使用 strace 追蹤程式
 - 辨識常見的 system call
 - 理解 Rust 程式碼如何轉換成 syscall
@@ -26,6 +27,30 @@ sudo apt install strace
 
 # 確認安裝
 strace --version
+```
+
+### macOS / Windows：用 Docker 跑 Linux（推薦）
+
+在 macOS/Windows 上要完整體驗 `strace`，最穩定的方式是在 Linux 容器內跑（需要 ptrace 權限）。
+
+在 repo 根目錄執行：
+
+```bash
+docker run --rm -it \
+  --cap-add=SYS_PTRACE \
+  --security-opt seccomp=unconfined \
+  -v "$PWD":/work \
+  -w /work \
+  rust:bookworm bash
+```
+
+在容器內執行：
+
+```bash
+apt-get update && apt-get install -y strace
+cd chapter_01_foundation/02_linux_basics/lab_03_strace
+cargo build --release
+strace -f ./target/release/strace_demo 2>&1 | less
 ```
 
 ---
@@ -110,10 +135,39 @@ nanosleep({tv_sec=1, tv_nsec=0}, ...) = 0
 
 ### 思考問題
 
-1. `println!` 對應哪個 syscall？fd 是多少？
-2. 為什麼 `File::open` 回傳的 fd 是 3 而不是 0？
-3. 你有看到 `close(3)` 嗎？是誰呼叫的？（提示：Rust 的 Drop）
+#### `println!` 對應哪個 syscall？fd 是多少？
 
+write, fd=1
+對應關係
+write(1, "=== \347\250\213\345\274\217\351\226\213\345\247\213 ===\n", 21=== <E7><A8><8B><E5><BC><8F><E9><96><8B><E5><A7><8B> === ) = 21
+println!("=== 程式開始 ===");
+
+#### 為什麼 `File::open` 回傳的 fd 是 3 而不是 0？
+
+0/1/2 在进程启动时通常已经被占用了：
+
+0 = stdin，1 = stdout，2 = stderr。
+File::open 底层会做 open/openat，内核会返回“当前进程中最小的可用 fd”。由于 0/1/2 已经在用，下一个就是 3。如果你先 close(0)，下一次 open 很可能就会拿到 0。
+
+> 你调用 File::open（底层 openat）时并不会指定 fd；内核会在该进程里挑一个“最小可用”的 fd 返回给你（通常从 3 开始，因为 0/1/2 已被占用）。你只需要保存并在之后用它读写，最后 close（Rust 会在 drop 时自动关闭）。
+
+#### 你有看到 `close(3)` 嗎？是誰呼叫的？（提示：Rust 的 Drop）
+
+close(4)：關掉 output.txt 那個 File::create(...) 打開的 fd=4
+close(3)：關掉 test.txt 那個 File::open(...) 打開的 fd=3
+
+### Note: 深度看 fd (file descriptor)
+
+fd（file descriptor）本质上就是：一个小整数“编号”，用来代表“这个进程当前打开的某个 I/O 资源的句柄”。
+
+它不是指令、也不是文件名；它只是索引/把手。
+内核在每个进程里维护一张“打开文件表”（fd table）：0,1,2,3,4... 每个格子指向一个内核对象（文件、管道、socket、终端、等）。
+0=stdin、1=stdout、2=stderr 只是约定：程序启动时父进程/运行环境就把这三个编号预先打开并接到终端/管道，所以它们“看起来像固定的”。
+所以：
+
+write(1, ...) = “往 fd=1 指向的资源写”（通常就是终端标准输出）
+openat(..., "test.txt", ...) = 3 = “打开文件 test.txt，内核分配一个最小可用编号 3 代表它”
+close(3) = “把编号 3 这格关掉，让它不再指向那个文件”
 ---
 
 ## 實驗二：觀察多執行緒
@@ -232,6 +286,7 @@ strace -c ./target/release/your_program
 ```
 
 輸出範例：
+
 ```
 % time     seconds  usecs/call     calls    errors syscall
 ------ ----------- ----------- --------- --------- ----------------
@@ -261,20 +316,20 @@ strace -e trace=mmap,munmap,brk,mprotect ./program
 
 ## 常見 System Call 對照表
 
-| Rust 程式碼 | System Call |
-|------------|-------------|
-| `File::open(path)` | `openat(AT_FDCWD, path, O_RDONLY)` |
-| `File::create(path)` | `openat(AT_FDCWD, path, O_WRONLY\|O_CREAT\|O_TRUNC)` |
-| `file.read(&mut buf)` | `read(fd, buf, len)` |
-| `file.write(data)` | `write(fd, data, len)` |
-| `drop(file)` | `close(fd)` |
-| `println!(...)` | `write(1, ...)` |
-| `eprintln!(...)` | `write(2, ...)` |
-| `thread::spawn(...)` | `clone(...)` |
-| `thread::sleep(...)` | `nanosleep(...)` |
-| `TcpListener::bind(...)` | `socket() + bind() + listen()` |
-| `listener.accept()` | `accept4(...)` |
-| `TcpStream::connect(...)` | `socket() + connect()` |
+| Rust 程式碼               | System Call                                          |
+| ------------------------- | ---------------------------------------------------- |
+| `File::open(path)`        | `openat(AT_FDCWD, path, O_RDONLY)`                   |
+| `File::create(path)`      | `openat(AT_FDCWD, path, O_WRONLY\|O_CREAT\|O_TRUNC)` |
+| `file.read(&mut buf)`     | `read(fd, buf, len)`                                 |
+| `file.write(data)`        | `write(fd, data, len)`                               |
+| `drop(file)`              | `close(fd)`                                          |
+| `println!(...)`           | `write(1, ...)`                                      |
+| `eprintln!(...)`          | `write(2, ...)`                                      |
+| `thread::spawn(...)`      | `clone(...)`                                         |
+| `thread::sleep(...)`      | `nanosleep(...)`                                     |
+| `TcpListener::bind(...)`  | `socket() + bind() + listen()`                       |
+| `listener.accept()`       | `accept4(...)`                                       |
+| `TcpStream::connect(...)` | `socket() + connect()`                               |
 
 ---
 

@@ -91,10 +91,10 @@ After completing this course, you will be able to:
 
 **Goal**: Implement common distributed system patterns
 
-| Topic      | Content                                | Labs                               |
-| ---------- | -------------------------------------- | ---------------------------------- |
-| Messaging  | Channels, pub/sub, message queues      | Channel Patterns, Simple Queue     |
-| Resilience | Rate limiting, circuit breaker, retry  | Token Bucket, Circuit Breaker      |
+| Topic      | Content                               | Labs                           |
+| ---------- | ------------------------------------- | ------------------------------ |
+| Messaging  | Channels, pub/sub, message queues     | Channel Patterns, Simple Queue |
+| Resilience | Rate limiting, circuit breaker, retry | Token Bucket, Circuit Breaker  |
 
 ### [Chapter 6: Capstone Project](./chapter_06_project/)
 
@@ -118,6 +118,7 @@ After completing this course, you will be able to:
   - WSL2 (Windows)
   - Docker
   - Cloud VM
+  - (macOS note) Many labs assume Linux tools/`/proc`; on macOS, run them inside Docker/VM
 
 ### Recommended
 
@@ -287,8 +288,20 @@ Build habits of observing your programs with these tools:
 
 **1.2 Linux Basics**
 
-- [ ] Read `02_linux_basics/theory.md`
+- [x] Read `02_linux_basics/theory.md`
 - [ ] Complete Lab 3: strace observation
+  - [ ] Finish Readme
+    - [x] 實作目標
+    - [x] 環境準備
+    - [x] 實驗一：觀察基本的檔案操作
+    - [ ] 實驗二：觀察多執行緒
+    - [ ] 實驗三：觀察網路操作
+    - [ ] 實驗四：效能分析
+    - [ ] 常見 System Call 對照表
+    - [ ] 驗收標準
+    - [ ] 延伸閱讀
+  - [ ] finish lab
+  - [ ] compare with solution
 - [ ] Complete Lab 4: Mini PS
 - [ ] Can use strace to trace programs
 - [ ] Understand /proc virtual filesystem
@@ -310,7 +323,7 @@ Build habits of observing your programs with these tools:
 
 **2.2 Memory**
 
-- [ ] Read theory
+- [x] Read theory
 - [ ] Complete Lab: Locality experiment
 - [ ] Complete Lab: Memory Pool
 
@@ -403,14 +416,14 @@ Build habits of observing your programs with these tools:
 
 ### Overall Progress
 
-| Chapter                        | Status      | Completion Date |
-| ------------------------------ | ----------- | --------------- |
-| Chapter 1: Foundation          | ✅ Available |                 |
-| Chapter 2: OS                  | ✅ Available |                 |
-| Chapter 3: Network             | ✅ Available |                 |
-| Chapter 4: Database            | ✅ Available |                 |
-| Chapter 5: Distributed         | ✅ Available |                 |
-| Chapter 6: Capstone            | ✅ Available |                 |
+| Chapter                | Status       | Completion Date |
+| ---------------------- | ------------ | --------------- |
+| Chapter 1: Foundation  | ✅ Available |                 |
+| Chapter 2: OS          | ✅ Available |                 |
+| Chapter 3: Network     | ✅ Available |                 |
+| Chapter 4: Database    | ✅ Available |                 |
+| Chapter 5: Distributed | ✅ Available |                 |
+| Chapter 6: Capstone    | ✅ Available |                 |
 
 ---
 

@@ -221,8 +221,7 @@ fn sum_with_rayon(n: u64) -> u64 {
         return 0;
     }
     if observe_mode() {
-        use rayon::iter::ParallelBridge;
-        (1..=n).par_bridge().map(|i| black_box(i)).sum()
+        (1..=n).into_par_iter().map(|i| black_box(i)).sum()
     } else {
         (1..=n).into_par_iter().sum()
     }
@@ -250,10 +249,10 @@ fn main() {
 
     let n_default: u64 = if observe { 500_000_000 } else { 100_000_000 };
     let n: u64 = black_box(read_env_u64("N").unwrap_or(n_default));
-    let expected = n * (n + 1) / 2;
+    let expected_u128: u128 = (n as u128) * ((n + 1) as u128) / 2;
 
     println!("N = {}", n);
-    println!("Expected: {}", expected);
+    println!("Expected: {}", expected_u128);
     if observe {
         let sleep_ms = read_env_u64("SLEEP_MS").unwrap_or(0);
         let rayon_threads = read_env_usize("RAYON_NUM_THREADS");
@@ -264,6 +263,9 @@ fn main() {
                 .map(|n| n.to_string())
                 .unwrap_or_else(|| "default".to_string())
         );
+        if expected_u128 > u64::MAX as u128 {
+            println!("Note: sum(1..=N) exceeds u64::MAX; Result values wrap modulo 2^64.");
+        }
     }
     println!("{}", "=".repeat(70));
 

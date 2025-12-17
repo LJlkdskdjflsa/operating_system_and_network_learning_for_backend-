@@ -17,6 +17,22 @@
 
 macOS 沒有 `/proc` 檔案系統（macOS 用的是 `sysctl` 和其他介面）。
 
+### macOS / Windows：用 Docker 跑 Linux（推薦）
+
+在 repo 根目錄執行：
+
+```bash
+docker run --rm -it -v "$PWD":/work -w /work rust:bookworm bash
+```
+
+在容器內執行：
+
+```bash
+cd chapter_01_foundation/02_linux_basics/lab_04_mini_ps
+cargo test
+cargo run --quiet
+```
+
 ---
 
 ## /proc 檔案系統介紹

@@ -271,10 +271,24 @@ lrwx------ 1 user user 64 Jan  1 10:00 2 -> /dev/pts/0
 ps aux --sort=-%cpu | head -10
 ```
 
+> Note: The commands in this section assume Linux (GNU procps/net tools). On macOS, `ps` flags differ (BSD `ps`).
+>
+> macOS alternative:
+>
+> ```bash
+> ps -Ao pid,user,%cpu,%mem,command | sort -nrk3 | head -10
+> ```
+
 ### Find processes using most memory
 
 ```bash
 ps aux --sort=-%mem | head -10
+```
+
+macOS alternative:
+
+```bash
+ps -Ao pid,user,%mem,%cpu,command | sort -nrk3 | head -10
 ```
 
 ### Trace specific syscalls (only open/read/write)
@@ -296,6 +310,8 @@ strace -p 1234
 # Need to know the PID
 ss -tulpn | grep 1234
 ```
+
+> Note: `ss` is a Linux tool (iproute2). On macOS, use `lsof -i -n -P` or `netstat`, or run this inside a Linux environment (Docker/VM).
 
 ---
 
