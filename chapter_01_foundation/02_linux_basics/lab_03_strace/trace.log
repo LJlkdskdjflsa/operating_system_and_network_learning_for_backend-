@@ -1,0 +1,108 @@
+execve("./target/release/strace_demo", ["./target/release/strace_demo"], 0xffffc77798d0 /* 10 vars */) = 0
+brk(NULL)                               = 0xaaaaf24c2000
+mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbdf74000
+faccessat(AT_FDCWD, "/etc/ld.so.preload", R_OK) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=23431, ...}, AT_EMPTY_PATH) = 0
+mmap(NULL, 23431, PROT_READ, MAP_PRIVATE, 3, 0) = 0xffffbdf6e000
+close(3)                                = 0
+openat(AT_FDCWD, "/lib/aarch64-linux-gnu/libgcc_s.so.1", O_RDONLY|O_CLOEXEC) = 3
+read(3, "\177ELF\2\1\1\0\0\0\0\0\0\0\0\0\3\0\267\0\1\0\0\0\0\0\0\0\0\0\0\0"..., 832) = 832
+newfstatat(3, "", {st_mode=S_IFREG|0644, st_size=133448, ...}, AT_EMPTY_PATH) = 0
+mmap(NULL, 262856, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbdefa000
+mmap(0xffffbdf00000, 197320, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0) = 0xffffbdf00000
+munmap(0xffffbdefa000, 24576)           = 0
+munmap(0xffffbdf31000, 37576)           = 0
+mprotect(0xffffbdf14000, 110592, PROT_NONE) = 0
+mmap(0xffffbdf2f000, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x1f000) = 0xffffbdf2f000
+close(3)                                = 0
+openat(AT_FDCWD, "/lib/aarch64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
+read(3, "\177ELF\2\1\1\3\0\0\0\0\0\0\0\0\3\0\267\0\1\0\0\0000y\2\0\0\0\0\0"..., 832) = 832
+newfstatat(3, "", {st_mode=S_IFREG|0755, st_size=1651408, ...}, AT_EMPTY_PATH) = 0
+mmap(NULL, 1826912, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbdd41000
+mmap(0xffffbdd50000, 1761376, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0) = 0xffffbdd50000
+munmap(0xffffbdd41000, 61440)           = 0
+munmap(0xffffbdeff000, 96)              = 0
+mprotect(0xffffbdedb000, 69632, PROT_NONE) = 0
+mmap(0xffffbdeec000, 24576, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x18c000) = 0xffffbdeec000
+mmap(0xffffbdef2000, 49248, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0xffffbdef2000
+close(3)                                = 0
+mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xffffbdf6c000
+set_tid_address(0xffffbdf6c0f0)         = 1079
+set_robust_list(0xffffbdf6c100, 24)     = 0
+rseq(0xffffbdf6c740, 0x20, 0, 0xd428bc00) = 0
+mprotect(0xffffbdeec000, 16384, PROT_READ) = 0
+mprotect(0xffffbdf2f000, 4096, PROT_READ) = 0
+mprotect(0xaaaae6b9d000, 12288, PROT_READ) = 0
+mprotect(0xffffbdf79000, 8192, PROT_READ) = 0
+prlimit64(0, RLIMIT_STACK, NULL, {rlim_cur=8192*1024, rlim_max=RLIM64_INFINITY}) = 0
+munmap(0xffffbdf6e000, 23431)           = 0
+ppoll([{fd=0, events=0}, {fd=1, events=0}, {fd=2, events=0}], 3, {tv_sec=0, tv_nsec=0}, NULL, 0) = 0 (Timeout)
+rt_sigaction(SIGPIPE, {sa_handler=SIG_IGN, sa_mask=[PIPE], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+getrandom("\x8f\x1c\x96\x9f\xe2\xf6\x97\x65", 8, GRND_NONBLOCK) = 8
+brk(NULL)                               = 0xaaaaf24c2000
+brk(0xaaaaf24e3000)                     = 0xaaaaf24e3000
+openat(AT_FDCWD, "/proc/self/maps", O_RDONLY|O_CLOEXEC) = 3
+prlimit64(0, RLIMIT_STACK, NULL, {rlim_cur=8192*1024, rlim_max=RLIM64_INFINITY}) = 0
+newfstatat(3, "", {st_mode=S_IFREG|0444, st_size=0, ...}, AT_EMPTY_PATH) = 0
+read(3, "aaaae6b30000-aaaae6b84000 r-xp 0"..., 1024) = 1024
+read(3, "00 ---p 00014000 00:76 34402506 "..., 1024) = 1024
+close(3)                                = 0
+sched_getaffinity(1079, 32, [0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15]) = 8
+rt_sigaction(SIGSEGV, NULL, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+sigaltstack(NULL, {ss_sp=NULL, ss_flags=SS_DISABLE, ss_size=0}) = 0
+mmap(NULL, 20480, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_STACK, -1, 0) = 0xffffbdf6f000
+mprotect(0xffffbdf6f000, 4096, PROT_NONE) = 0
+sigaltstack({ss_sp=0xffffbdf70000, ss_flags=0, ss_size=16384}, NULL) = 0
+rt_sigaction(SIGSEGV, {sa_handler=0xaaaae6b48dd0, sa_mask=[], sa_flags=SA_ONSTACK|SA_SIGINFO}, NULL, 8) = 0
+rt_sigaction(SIGBUS, NULL, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+rt_sigaction(SIGBUS, {sa_handler=0xaaaae6b48dd0, sa_mask=[], sa_flags=SA_ONSTACK|SA_SIGINFO}, NULL, 8) = 0
+write(1, "=== strace Observation Experimen"..., 39) = 39
+write(1, "[Experiment 1] File Reading\n", 28) = 28
+write(1, "  -> Observe: openat, read, clos"..., 34) = 34
+openat(AT_FDCWD, "test.txt", O_WRONLY|O_CREAT|O_TRUNC|O_CLOEXEC, 0666) = 3
+write(3, "This is test content for strace "..., 44) = 44
+close(3)                                = 0
+openat(AT_FDCWD, "test.txt", O_RDONLY|O_CLOEXEC) = 3
+statx(3, "", AT_STATX_SYNC_AS_STAT|AT_EMPTY_PATH, STATX_ALL, {stx_mask=STATX_ALL|STATX_MNT_ID, stx_attributes=0, stx_mode=S_IFREG|0644, stx_size=44, ...}) = 0
+lseek(3, 0, SEEK_CUR)                   = 0
+read(3, "This is test content for strace "..., 44) = 44
+read(3, "", 32)                         = 0
+write(1, "  Read 44 bytes\n", 16)       = 16
+close(3)                                = 0
+write(1, "\n[Experiment 2] File Writing\n", 29) = 29
+write(1, "  -> Observe: openat (with O_CRE"..., 50) = 50
+openat(AT_FDCWD, "output.txt", O_WRONLY|O_CREAT|O_TRUNC|O_CLOEXEC, 0666) = 3
+write(3, "Line 1: Hello from Rust!\n", 25) = 25
+write(3, "Line 2: Hello from Rust!\n", 25) = 25
+write(3, "Line 3: Hello from Rust!\n", 25) = 25
+write(1, "  Wrote 3 lines\n", 16)       = 16
+close(3)                                = 0
+write(1, "\n[Experiment 3] Sleep 500ms\n", 28) = 28
+write(1, "  -> Observe: nanosleep\n", 24) = 24
+clock_nanosleep(CLOCK_REALTIME, 0, {tv_sec=0, tv_nsec=500000000}, 0xffffcc595f68) = 0
+write(1, "\n[Experiment 4] Multi-threading\n", 32) = 32
+write(1, "  -> Observe: clone (use strace "..., 36) = 36
+rt_sigaction(SIGRT_1, {sa_handler=0xffffbddcf1e0, sa_mask=[], sa_flags=SA_ONSTACK|SA_RESTART|SA_SIGINFO}, NULL, 8) = 0
+rt_sigprocmask(SIG_UNBLOCK, [RTMIN RT_1], NULL, 8) = 0
+mmap(NULL, 2162688, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_STACK, -1, 0) = 0xffffbda00000
+mprotect(0xffffbda10000, 2097152, PROT_READ|PROT_WRITE) = 0
+rt_sigprocmask(SIG_BLOCK, ~[], [], 8)   = 0
+clone(child_stack=0xffffbdc0ea00, flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID, parent_tid=[1080], tls=0xffffbdc0f880, child_tidptr=0xffffbdc0f210) = 1080
+rt_sigprocmask(SIG_SETMASK, [], NULL, 8) = 0
+mmap(NULL, 2162688, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_STACK, -1, 0) = 0xffffbd600000
+mprotect(0xffffbd610000, 2097152, PROT_READ|PROT_WRITE) = 0
+rt_sigprocmask(SIG_BLOCK, ~[], [], 8)   = 0
+clone(child_stack=0xffffbd80ea00, flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID, parent_tid=[1081], tls=0xffffbd80f880, child_tidptr=0xffffbd80f210) = 1081
+rt_sigprocmask(SIG_SETMASK, [], NULL, 8) = 0
+mmap(NULL, 2162688, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_STACK, -1, 0) = 0xffffbd200000
+mprotect(0xffffbd210000, 2097152, PROT_READ|PROT_WRITE) = 0
+rt_sigprocmask(SIG_BLOCK, ~[], [], 8)   = 0
+clone(child_stack=0xffffbd40ea00, flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID, parent_tid=[1082], tls=0xffffbd40f880, child_tidptr=0xffffbd40f210) = 1082
+rt_sigprocmask(SIG_SETMASK, [], NULL, 8) = 0
+futex(0xffffbdc0f210, FUTEX_WAIT_BITSET|FUTEX_CLOCK_REALTIME, 1080, NULL, FUTEX_BITSET_MATCH_ANY) = 0
+write(1, "\n=== Experiment Complete ===\n", 29) = 29
+sigaltstack({ss_sp=NULL, ss_flags=SS_DISABLE, ss_size=16384}, NULL) = 0
+munmap(0xffffbdf6f000, 20480)           = 0
+exit_group(0)                           = ?
++++ exited with 0 +++

@@ -289,22 +289,32 @@ Build habits of observing your programs with these tools:
 **1.2 Linux Basics**
 
 - [x] Read `02_linux_basics/theory.md`
-- [ ] Complete Lab 3: strace observation
-  - [ ] Finish Readme
+- [x] Complete Lab 3: strace observation
+  - [x] Finish Readme
     - [x] 實作目標
     - [x] 環境準備
     - [x] 實驗一：觀察基本的檔案操作
-    - [ ] 實驗二：觀察多執行緒
-    - [ ] 實驗三：觀察網路操作
-    - [ ] 實驗四：效能分析
-    - [ ] 常見 System Call 對照表
-    - [ ] 驗收標準
-    - [ ] 延伸閱讀
-  - [ ] finish lab
-  - [ ] compare with solution
-- [ ] Complete Lab 4: Mini PS
-- [ ] Can use strace to trace programs
-- [ ] Understand /proc virtual filesystem
+    - [x] 實驗二：觀察多執行緒
+    - [x] 實驗三：觀察網路操作
+    - [x] 實驗四：效能分析
+    - [x] 常見 System Call 對照表
+    - [x] 驗收標準
+    - [x] 延伸閱讀
+  - [x] finish lab
+  - [x] compare with solution
+- [x] Complete Lab 4: Mini PS
+  - [x] Read README and understand requirements
+  - [x] Implementation
+    - [x] List all PIDs by reading `/proc` directory
+    - [x] Read `/proc/[pid]/cmdline` for command line
+    - [x] Read `/proc/[pid]/status` for Name, State, PPid
+    - [x] Extract VmRSS (memory usage) from status
+    - [x] Handle processes that disappear during reading
+    - [x] Format output as table (PID, PPID, STATE, MEMORY, COMMAND)
+  - [x] Run `cargo test` and pass all tests
+  - [x] Compare with solution
+- [x] Can use strace to trace programs
+- [x] Understand /proc virtual filesystem
 
 **Chapter 1 Checkpoint**
 
@@ -318,21 +328,70 @@ Build habits of observing your programs with these tools:
 **2.1 Process & Thread**
 
 - [ ] Read theory
-- [ ] Complete Lab: Process vs Thread comparison
-- [ ] Complete Lab: Thread Pool
+- [ ] Complete Lab 1: Process vs Thread comparison
+  - [ ] Read README and understand requirements
+  - [ ] Implementation
+    - [ ] Implement `sum_with_processes(n, num_workers)` using `nix::unistd::fork()`
+    - [ ] Implement IPC (pipes or unix sockets) for process communication
+    - [ ] Implement `sum_with_threads(n, num_workers)` with thread spawn
+    - [ ] Both versions produce correct parallel sum results
+    - [ ] Run performance comparison showing execution time
+  - [ ] Run `cargo test` and pass all tests
+  - [ ] Compare with solution
+- [ ] Complete Lab 2: Thread Pool
+  - [ ] Read README and understand requirements
+  - [ ] Implementation
+    - [ ] Create `ThreadPool` struct with fixed number of workers
+    - [ ] Workers wait for jobs using blocking receive (not busy-wait)
+    - [ ] Implement `execute()` method to submit tasks
+    - [ ] Jobs are `Box<dyn FnOnce() + Send + 'static>`
+    - [ ] Use `mpsc::channel` to send jobs to workers
+    - [ ] Use `Arc<Mutex<Receiver>>` to share receiver among workers
+    - [ ] Implement graceful shutdown when pool is dropped
+  - [ ] Run `cargo test` and pass all tests
+  - [ ] Compare with solution
 
 **2.2 Memory**
 
 - [x] Read theory
-- [ ] Complete Lab: Locality experiment
-- [ ] Complete Lab: Memory Pool
+- [ ] Complete Lab 3: Cache Locality
+  - [ ] Read README and understand requirements
+  - [ ] Implementation
+    - [ ] Implement `sum_sequential(arr)` - sum in order (good locality)
+    - [ ] Implement `sum_random(arr, indices)` - sum in random order (poor locality)
+    - [ ] Implement `sum_row_major(arr)` - iterate 2D array row-first
+    - [ ] Implement `sum_column_major(arr)` - iterate 2D array column-first
+    - [ ] Use large arrays (10 million elements)
+    - [ ] Run in release mode and measure performance
+    - [ ] Verify sequential > random, row-major > column-major
+  - [ ] Run `cargo test` and pass all tests
+  - [ ] Compare with solution
 
 **2.3 I/O Model**
 
 - [ ] Read theory
-- [ ] Complete Lab: Blocking Echo Server
-- [ ] Complete Lab: Non-blocking (mio) Echo Server
-- [ ] Complete Lab: Async (Tokio) Echo Server
+- [ ] Complete Lab 4: Blocking Echo Server
+  - [ ] Read README and understand requirements
+  - [ ] Implementation
+    - [ ] Listen on TCP port 8080
+    - [ ] Accept incoming connections
+    - [ ] Spawn a thread for each connection
+    - [ ] Echo back whatever the client sends
+    - [ ] Handle client disconnection gracefully (read returns 0)
+    - [ ] Log connection and disconnection events
+  - [ ] Run `cargo test` and pass all tests
+  - [ ] Compare with solution
+- [ ] Complete Lab 5: Async Echo Server
+  - [ ] Read README and understand requirements
+  - [ ] Implementation
+    - [ ] Listen on TCP port 8080 asynchronously
+    - [ ] Accept connections with `.await`
+    - [ ] Spawn async task (not thread!) using `tokio::spawn`
+    - [ ] Echo back data using `AsyncReadExt` and `AsyncWriteExt`
+    - [ ] Handle client disconnection gracefully
+    - [ ] Observe that thread count stays low with many connections
+  - [ ] Run `cargo test` and pass all tests
+  - [ ] Compare with solution
 
 ---
 
@@ -341,22 +400,75 @@ Build habits of observing your programs with these tools:
 **3.1 TCP/UDP**
 
 - [ ] Read theory
-- [ ] Complete Lab: TCP Chat Server
-- [ ] Complete Lab: UDP Echo
+- [ ] Complete Lab 1: TCP Chat Server
+  - [ ] Read README and understand requirements
+  - [ ] Implementation
+    - [ ] Listen on TCP port 8080
+    - [ ] Accept multiple clients concurrently
+    - [ ] Broadcast message to all other connected clients
+    - [ ] Handle client disconnection gracefully
+    - [ ] Show connection/disconnection notifications
+    - [ ] Use `tokio::sync::broadcast` or `Arc<Mutex<HashMap>>` for shared state
+    - [ ] Each client has unique ID
+  - [ ] Run `cargo test` and pass all tests
+  - [ ] Compare with solution
+- [ ] Complete Lab 2: UDP Echo Server
+  - [ ] Read README and understand requirements
+  - [ ] Implementation
+    - [ ] Listen on UDP port 8080
+    - [ ] Receive datagrams using `recv_from()`
+    - [ ] Echo each datagram back using `send_to()`
+    - [ ] Print statistics (packets received, bytes processed)
+    - [ ] Use `AtomicU64` for counters
+    - [ ] Understand difference from TCP (no connection, per-datagram)
+  - [ ] Run `cargo test` and pass all tests
+  - [ ] Compare with solution
 - [ ] Use tcpdump/Wireshark to observe packets
 
 **3.2 HTTP**
 
 - [ ] Read theory
-- [ ] Complete Lab: Handcrafted HTTP Server
-- [ ] Complete Lab: Axum rewrite
+- [ ] Complete Lab 3: Raw HTTP Server
+  - [ ] Read README and understand requirements
+  - [ ] Implementation
+    - [ ] Listen on port 8080
+    - [ ] Parse HTTP requests manually (request line, headers, body)
+    - [ ] Route based on method and path
+    - [ ] Implement `GET /` → "Hello, World!"
+    - [ ] Implement `GET /hello/{name}` → "Hello, {name}!"
+    - [ ] Implement `GET /time` → current time
+    - [ ] Implement 404 Not Found for other routes
+    - [ ] Return proper HTTP responses with headers (CRLF `\r\n`)
+  - [ ] Run `cargo test` and pass all tests
+  - [ ] Compare with solution
+- [ ] Complete Lab 4: Axum REST API
+  - [ ] Read README and understand requirements
+  - [ ] Implementation
+    - [ ] Store items in `Arc<Mutex<HashMap>>`
+    - [ ] Implement `GET /items` - List all items
+    - [ ] Implement `POST /items` - Create new item (returns 201)
+    - [ ] Implement `GET /items/:id` - Get single item (returns 404 if not found)
+    - [ ] Implement `PUT /items/:id` - Update item
+    - [ ] Implement `DELETE /items/:id` - Delete item
+    - [ ] Return proper JSON responses with appropriate status codes
+    - [ ] Handle concurrent requests safely
+  - [ ] Run `cargo test` and pass all tests
+  - [ ] Compare with solution
 
 **3.3 TLS & Proxy**
 
 - [ ] Read theory
-- [ ] Complete Lab: HTTPS Server
-- [ ] Complete Lab: Reverse Proxy
-- [ ] Complete Lab: Load Balancer
+- [ ] Complete Lab 5: Reverse Proxy
+  - [ ] Read README and understand requirements
+  - [ ] Implementation
+    - [ ] Listen on port 8080
+    - [ ] Forward requests to multiple backend servers
+    - [ ] Implement round-robin load balancing using `AtomicUsize`
+    - [ ] Add `X-Forwarded-For` header
+    - [ ] Handle backend failures gracefully (don't crash proxy)
+    - [ ] Read HTTP request, connect to backend, forward request and response
+  - [ ] Run `cargo test` and pass all tests
+  - [ ] Compare with solution
 
 ---
 
@@ -365,14 +477,60 @@ Build habits of observing your programs with these tools:
 **4.1 SQL**
 
 - [ ] Read theory
-- [ ] Complete Lab: SQLx CRUD
-- [ ] Complete Lab: Connection Pool
+- [ ] Complete Lab 1: SQLx CRUD
+  - [ ] Read README and understand requirements
+  - [ ] Implementation
+    - [ ] Create User table with id, name, email fields
+    - [ ] Implement `init_db()` - create table on startup
+    - [ ] Implement `create_user()` - insert new user
+    - [ ] Implement `get_user(id)` - read user by ID
+    - [ ] Implement `list_users()` - get all users
+    - [ ] Implement `update_user(id, name)` - update user
+    - [ ] Implement `delete_user(id)` - delete user
+    - [ ] Use SQLx query macros for type safety
+    - [ ] Use `SqlitePool` for connection pool
+  - [ ] Run `cargo test` and pass all tests
+  - [ ] Compare with solution
+- [ ] Complete Lab 2: Connection Pool Behavior
+  - [ ] Read README and understand requirements
+  - [ ] Implementation
+    - [ ] Create pool with configurable size (test 2, 5, 10)
+    - [ ] Simulate concurrent database queries using `tokio::spawn`
+    - [ ] Implement `slow_query()` with artificial delay
+    - [ ] Implement `run_concurrent_queries()` - spawn N concurrent queries
+    - [ ] Measure query latency with different pool sizes
+    - [ ] Calculate statistics: min, max, average, p95 latency
+    - [ ] Observe that queries wait when pool is exhausted
+  - [ ] Run `cargo test` and pass all tests
+  - [ ] Compare with solution
 
 **4.2 Caching**
 
 - [ ] Read theory
-- [ ] Complete Lab: Redis Basics
-- [ ] Complete Lab: Cache Patterns
+- [ ] Complete Lab 3: Redis Basics
+  - [ ] Read README and understand requirements
+  - [ ] Implementation
+    - [ ] Connect to Redis server
+    - [ ] Implement `demo_strings()` - GET, SET, DEL operations
+    - [ ] Implement `demo_ttl()` - SET with expiration, check TTL
+    - [ ] Implement `demo_hash()` - HSET, HGET, HGETALL operations
+    - [ ] Implement `demo_list()` - LPUSH, RPOP, LRANGE operations
+    - [ ] Use async connection with `redis::AsyncCommands`
+  - [ ] Run `cargo test` and pass all tests
+  - [ ] Compare with solution
+- [ ] Complete Lab 4: Cache Patterns
+  - [ ] Read README and understand requirements
+  - [ ] Implementation
+    - [ ] Implement cache-aside pattern
+    - [ ] Support TTL (expiration) using `Instant` for timestamps
+    - [ ] Handle cache misses by fetching from "database"
+    - [ ] Implement `Cache::get()` - check expiration, update stats
+    - [ ] Implement `Cache::set()` - store with TTL
+    - [ ] Implement `get_user_cached()` - cache first, fallback to database
+    - [ ] Track cache hit/miss statistics with `CacheStats`
+    - [ ] Calculate and display hit rate
+  - [ ] Run `cargo test` and pass all tests
+  - [ ] Compare with solution
 
 ---
 
@@ -381,14 +539,56 @@ Build habits of observing your programs with these tools:
 **5.1 Messaging**
 
 - [ ] Read theory
-- [ ] Complete Lab: Channel Patterns
-- [ ] Complete Lab: Simple Queue
+- [ ] Complete Lab 1: Channel Patterns
+  - [ ] Read README and understand requirements
+  - [ ] Implementation
+    - [ ] Implement `demo_fan_in()` - multiple producers → single consumer (`mpsc`)
+    - [ ] Implement `demo_fan_out()` - single producer → multiple consumers (`broadcast`)
+    - [ ] Implement `demo_worker_pool()` - distribute jobs across workers sharing receiver
+    - [ ] Handle graceful shutdown (no hanging)
+    - [ ] Show proper use of channel cloning and dropping
+  - [ ] Run `cargo test` and pass all tests
+  - [ ] Compare with solution
+- [ ] Complete Lab 2: Simple Message Queue
+  - [ ] Read README and understand requirements
+  - [ ] Implementation
+    - [ ] Implement `Queue` struct with pending and processing queues
+    - [ ] Implement `enqueue(payload)` - add message with UUID
+    - [ ] Implement `dequeue()` - get next message, move to processing
+    - [ ] Implement `acknowledge(id)` - remove from processing
+    - [ ] Implement `check_timeouts()` - redeliver unacknowledged messages
+    - [ ] Track message attempts
+    - [ ] Demonstrate unacked messages are redelivered
+  - [ ] Run `cargo test` and pass all tests
+  - [ ] Compare with solution
 
 **5.2 Resilience Patterns**
 
 - [ ] Read theory
-- [ ] Complete Lab: Rate Limiter
-- [ ] Complete Lab: Circuit Breaker
+- [ ] Complete Lab 3: Rate Limiter
+  - [ ] Read README and understand requirements
+  - [ ] Implementation
+    - [ ] Implement `RateLimiter::new(capacity, refill_rate)`
+    - [ ] Implement `refill()` - calculate elapsed time, add tokens (don't exceed capacity)
+    - [ ] Implement `allow()` - check if request allowed, consume 1 token
+    - [ ] Implement `allow_n(n)` - consume n tokens for batch requests
+    - [ ] Track tokens as f64 for partial refills
+    - [ ] Demonstrate burst behavior and refill over time
+  - [ ] Run `cargo test` and pass all tests
+  - [ ] Compare with solution
+- [ ] Complete Lab 4: Circuit Breaker
+  - [ ] Read README and understand requirements
+  - [ ] Implementation
+    - [ ] Three states: Closed, Open, HalfOpen
+    - [ ] Track consecutive failures with configurable threshold
+    - [ ] Open circuit after N consecutive failures
+    - [ ] Transition to HalfOpen after reset timeout
+    - [ ] In HalfOpen: success closes, failure opens
+    - [ ] Implement `call(f)` - execute function through circuit breaker
+    - [ ] Return `CircuitError::Open` when circuit is open
+    - [ ] Implement `on_success()` and `on_failure()` handlers
+  - [ ] Run `cargo test` and pass all tests
+  - [ ] Compare with solution
 
 ---
 
@@ -397,19 +597,83 @@ Build habits of observing your programs with these tools:
 **6.1 REST Service**
 
 - [ ] Read theory
-- [ ] Complete Lab: Axum CRUD API
-- [ ] Complete Lab: Database Integration
+- [ ] Complete Lab 1: Axum CRUD with UUID
+  - [ ] Read README and understand requirements
+  - [ ] Implementation
+    - [ ] Data model: `Item { id: Uuid, name, description, price, created_at }`
+    - [ ] Use `Arc<RwLock<HashMap<Uuid, Item>>>` for shared state
+    - [ ] Implement `POST /items` - Create (returns 201)
+    - [ ] Implement `GET /items/:id` - Get by ID (returns 404 if not found)
+    - [ ] Implement `GET /items` - List with pagination (`?page=1&limit=10`)
+    - [ ] Implement `PUT /items/:id` - Update (partial updates with `Option<T>`)
+    - [ ] Implement `DELETE /items/:id` - Delete (returns 204)
+    - [ ] Implement proper error responses with `AppError` enum
+  - [ ] Run `cargo test` and pass all tests
+  - [ ] Compare with solution
+- [ ] Complete Lab 2: Database Integration
+  - [ ] Read README and understand requirements
+  - [ ] Implementation
+    - [ ] Initialize SQLite database with schema on startup
+    - [ ] Database schema: items table (id TEXT, name, description, price, created_at)
+    - [ ] Store UUID as TEXT in SQLite
+    - [ ] Implement `init_db(pool)` - create table if not exists
+    - [ ] Update all handlers to use SQLx database queries
+    - [ ] Implement pagination with COUNT and LIMIT/OFFSET
+    - [ ] Use connection pool via Axum State
+    - [ ] Handle database errors with proper conversion to `AppError`
+  - [ ] Run `cargo test` and pass all tests
+  - [ ] Compare with solution
 
 **6.2 Observability**
 
 - [ ] Read theory
-- [ ] Complete Lab: Structured Logging (Tracing)
-- [ ] Complete Lab: Prometheus Metrics
+- [ ] Complete Lab 3: Structured Logging (Tracing)
+  - [ ] Read README and understand requirements
+  - [ ] Implementation
+    - [ ] Initialize tracing subscriber with JSON output
+    - [ ] Generate unique request ID (UUID) for each request
+    - [ ] Create request span with method, path, request_id
+    - [ ] Log request start and completion with duration (ms)
+    - [ ] Implement `logging_middleware` that creates spans and logs
+    - [ ] Use appropriate log levels (info, warn, error)
+    - [ ] Use `#[instrument]` attribute for automatic span creation
+    - [ ] Output JSON format with timestamp, level, request_id, method, path
+  - [ ] Run `cargo test` and pass all tests
+  - [ ] Compare with solution
+- [ ] Complete Lab 4: Prometheus Metrics
+  - [ ] Read README and understand requirements
+  - [ ] Implementation
+    - [ ] Create `http_requests_total` (CounterVec) with labels [method, path, status]
+    - [ ] Create `http_request_duration_seconds` (HistogramVec) with labels [method, path]
+    - [ ] Implement `Metrics` struct with Registry
+    - [ ] Implement `metrics_middleware` that records metrics for every request
+    - [ ] Implement `/metrics` endpoint returning Prometheus text format
+    - [ ] Histogram buckets: [0.001, 0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1.0]
+    - [ ] Increment counter after request completes
+    - [ ] Observe duration for histogram
+  - [ ] Run `cargo test` and pass all tests
+  - [ ] Compare with solution
 
 **6.3 Performance**
 
 - [ ] Read theory
-- [ ] Complete Lab: Load Testing Tool
+- [ ] Complete Lab 5: Load Testing Tool
+  - [ ] Read README and understand requirements
+  - [ ] Implementation
+    - [ ] Accept CLI arguments: `--url`, `--concurrency`, `--duration`
+    - [ ] Create HTTP client and shared `Stats` struct
+    - [ ] Spawn N concurrent worker tasks using `tokio::spawn`
+    - [ ] Each worker loops until duration expires, making HTTP GET requests
+    - [ ] Measure latency for each request using `Instant`
+    - [ ] Record success/failure with `AtomicU64` counters
+    - [ ] Collect all latencies in `Mutex<Vec<Duration>>`
+    - [ ] Calculate total requests, success/failed count
+    - [ ] Calculate requests per second (throughput)
+    - [ ] Calculate latency percentiles (p50, p95, p99)
+    - [ ] Calculate min/max/average latency
+    - [ ] Sort latencies for percentile calculation
+  - [ ] Run `cargo test` and pass all tests
+  - [ ] Compare with solution
 - [ ] Document performance analysis
 
 ---

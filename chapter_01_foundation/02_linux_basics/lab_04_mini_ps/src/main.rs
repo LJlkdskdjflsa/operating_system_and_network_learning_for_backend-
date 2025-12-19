@@ -54,44 +54,112 @@ fn main() {
     );
     println!("{}", "-".repeat(60));
 
-    // TODO: Implement the following steps
-    //
     // 1. List all PIDs
-    //    - Read the /proc directory
-    //    - Find all subdirectory names that are pure numbers
-    //
-    // 2. For each PID, read the following information:
-    //    - /proc/[pid]/cmdline -> command line
-    //    - /proc/[pid]/status -> Name, State, PPid, VmRSS
-    //
-    // 3. Format the output
+    let mut pids = list_pids();
+    pids.sort(); // Sort by PID for consistent output
 
-    println!("TODO: Implement mini ps!");
+    // 2. For each PID, get info and print
+    for pid in pids {
+        // Get status info, skip if process disappeared
+        let Some((name, state, ppid, memory_kb)) = get_status(pid) else {
+            continue;
+        };
+
+        // Get command line, fallback to name (for kernel threads)
+        let cmdline = get_cmdline(pid).unwrap_or_else(|| format!("[{}]", name));
+
+        // Format memory: None -> "?", Some(kb) -> human readable
+        let memory = match memory_kb {
+            Some(kb) if kb >= 1024 => format!("{:.1}M", kb as f64 / 1024.0),
+            Some(kb) => format!("{}K", kb),
+            None => "?".to_string(),
+        };
+
+        println!(
+            "{:>7} {:>7} {:>5} {:>8}   {}",
+            pid, ppid, state, memory, cmdline
+        );
+    }
 }
 
 // TODO: Implement these helper functions
 
 /// List all PIDs
 fn list_pids() -> Vec<u32> {
-    // Hint:
-    // fs::read_dir("/proc")
-    // Filter out directory names that can be parsed as u32
-    todo!()
+    let mut pids = Vec::new();
+
+    for entry in fs::read_dir("/proc").unwrap() {
+        if let Ok(entry) = entry {
+            if let Some(name_str) = entry.file_name().to_str() {
+                if let Ok(pid) = name_str.parse::<u32>() {
+                    pids.push(pid);
+                }
+            }
+        }
+    }
+
+    pids
 }
 
 /// Read process command line
 fn get_cmdline(pid: u32) -> Option<String> {
-    // Hint:
     // Read /proc/[pid]/cmdline
-    // Replace \0 with spaces
-    todo!()
+    let path = format!("/proc/{}/cmdline", pid);
+    let content = fs::read_to_string(&path).ok()?;
+
+    // If empty (kernel thread), return None
+    if content.is_empty() {
+        return None;
+    }
+
+    // Replace \0 with spaces and trim
+    let cmdline = content.replace('\0', " ").trim().to_string();
+    Some(cmdline)
 }
 
 /// Read process status
+/// Returns (name, state, ppid, memory_kb)
 fn get_status(pid: u32) -> Option<(String, String, u32, Option<u64>)> {
-    // Returns (name, state, ppid, memory_kb)
-    // Hint:
     // Read /proc/[pid]/status
-    // Parse each line's Key: Value format
-    todo!()
+    let path = format!("/proc/{}/status", pid);
+    let content = fs::read_to_string(&path).ok()?;
+
+    let mut name = String::new();
+    let mut state = String::new();
+    let mut ppid: u32 = 0;
+    let mut memory_kb: Option<u64> = None;
+
+    // Parse each line (format: "Key:\tValue")
+    for line in content.lines() {
+        // split_once splits "Name:  bash" into ("Name", "  bash")
+        if let Some((key, value)) = line.split_once(':') {
+            let value = value.trim();
+
+            match key {
+                "Name" => name = value.to_string(),
+                "State" => {
+                    // "S (sleeping)" -> just take "S"
+                    // R (Running)
+                    state = value.chars().next().unwrap_or('?').to_string();
+                }
+                "PPid" => {
+                    ppid = value.parse().unwrap_or(0);
+                }
+                "VmRSS" => {
+                    // "3256 kB" -> extract 3256
+                    if let Some(num_str) = value.split_whitespace().next() {
+                        memory_kb = num_str.parse().ok();
+                    }
+                }
+                _ => {} // ignore other fields
+            }
+        }
+    }
+
+    // Return None if we couldn't get basic info
+    if name.is_empty() {
+        return None;
+    }
+
+    Some((name, state, ppid, memory_kb))
 }

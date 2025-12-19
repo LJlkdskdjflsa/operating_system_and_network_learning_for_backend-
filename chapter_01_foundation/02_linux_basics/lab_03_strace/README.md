@@ -303,13 +303,12 @@ strace -c ./target/release/your_program
 
 ```bash
 # 只看檔案相關
-strace -e trace=open,openat,read,write,close ./program
+strace -e trace=open,openat,read,write,close ./target/release/strace_demo
 
 # 只看網路相關
-strace -e trace=socket,bind,listen,accept,connect,send,recv ./program
-
+strace -e trace=socket,bind,listen,accept,connect,send,recv ./target/release/strace_demo
 # 只看記憶體相關
-strace -e trace=mmap,munmap,brk,mprotect ./program
+strace -e trace=mmap,munmap,brk,mprotect ./target/release/strace_demo
 ```
 
 ---
@@ -335,11 +334,11 @@ strace -e trace=mmap,munmap,brk,mprotect ./program
 
 ## 驗收標準
 
-- [ ] 能用 strace 追蹤自己的程式
-- [ ] 能辨識 open/read/write/close 等基本 syscall
-- [ ] 能解釋 fd 的概念
-- [ ] 能用 `-c` 統計 syscall
-- [ ] 能用 `-f` 追蹤多執行緒
+- [x] 能用 strace 追蹤自己的程式
+- [x] 能辨識 open/read/write/close 等基本 syscall
+- [x] 能解釋 fd 的概念
+- [x] 能用 `-c` 統計 syscall
+- [x] 能用 `-f` 追蹤多執行緒
 
 ---
 

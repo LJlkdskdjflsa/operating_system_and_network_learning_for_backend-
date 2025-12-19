@@ -1,1 +1,3 @@
-Hello from Rust!
+Line 1: Hello from Rust!
+Line 2: Hello from Rust!
+Line 3: Hello from Rust!
