@@ -39,8 +39,14 @@
 //!
 //! Check solution/main.rs after completing
 
+use nix::sys::wait::waitpid;
+use nix::unistd::{fork, ForkResult};
+use std::io::{Read, Write};
+use std::os::fd::AsRawFd;
+use std::os::unix::net::UnixStream;
+use std::sync::mpsc;
+use std::thread;
 use std::time::Instant;
-
 // ============================================================
 // TODO: Implement these two functions
 // ============================================================
@@ -53,14 +59,73 @@ use std::time::Instant;
 /// 3. Each child computes its portion and sends result to parent
 /// 4. Parent collects all results and sums them
 fn sum_with_processes(n: u64, num_workers: usize) -> u64 {
-    // TODO: Implement using nix::unistd::fork()
-    //
-    // Hint for dividing work:
-    // let chunk_size = n / num_workers as u64;
-    // Worker i computes: (i * chunk_size + 1) ..= ((i + 1) * chunk_size)
-    // Last worker handles remainder
+    if n == 0 || num_workers == 0 {
+        return 0;
+    }
 
-    todo!("Implement multi-process version")
+    let workers = num_workers.min(n as usize);
+    let chunk = (n + workers as u64 - 1) / workers as u64;
+    let mut streams = Vec::with_capacity(workers);
+    let mut child_pids = Vec::with_capacity(workers);
+
+    for i in 0..workers {
+        let (parent_stream, child_stream) =
+            UnixStream::pair().expect("Failed to create socket pair");
+        let parent_fd = parent_stream.as_raw_fd();
+        let child_fd = child_stream.as_raw_fd();
+        streams.push(parent_stream);
+
+        let start = i as u64 * chunk + 1;
+        let mut end = (i as u64 + 1) * chunk;
+        if end > n {
+            end = n;
+        }
+
+        match unsafe { fork() } {
+            Ok(ForkResult::Child) => {
+                eprintln!(
+                    "[child pid={}] stream_fd={}",
+                    std::process::id(),
+                    child_fd
+                );
+                drop(streams);
+                let local_sum = if start > end {
+                    0
+                } else {
+                    (start..=end).sum::<u64>()
+                };
+                let mut stream = child_stream;
+                stream
+                    .write_all(&local_sum.to_le_bytes())
+                    .expect("Failed to write");
+                std::process::exit(0);
+            }
+            Ok(ForkResult::Parent { child }) => {
+                eprintln!(
+                    "[parent pid={}] child_pid={} stream_fd={}",
+                    std::process::id(),
+                    child.as_raw(),
+                    parent_fd
+                );
+                child_pids.push(child);
+                drop(child_stream);
+            }
+            Err(err) => panic!("Fork failed: {}", err),
+        }
+    }
+
+    let mut total = 0u64;
+    for mut stream in streams {
+        let mut buf = [0u8; 8];
+        stream.read_exact(&mut buf).expect("Failed to read");
+        total += u64::from_le_bytes(buf);
+    }
+
+    for pid in child_pids {
+        waitpid(pid, None).expect("Failed to wait");
+    }
+
+    total
 }
 
 /// Multi-thread version using std::thread
@@ -71,13 +136,38 @@ fn sum_with_processes(n: u64, num_workers: usize) -> u64 {
 /// 3. Each thread computes its portion
 /// 4. Collect and sum all results
 fn sum_with_threads(n: u64, num_workers: usize) -> u64 {
-    // TODO: Implement using std::thread
-    //
-    // You can use either:
-    // - mpsc::channel to send results
-    // - Arc<Mutex<u64>> to accumulate results
+    if n == 0 || num_workers == 0 {
+        return 0;
+    }
+    let workers = num_workers.min(n as usize); // 避免開太多無事可做的 thread
+    let chunk = (n + workers as u64 - 1) / workers as u64;
+    let (tx, rx) = mpsc::channel::<u64>();
+    for i in 0..workers {
+        let tx = tx.clone();
 
-    todo!("Implement multi-thread version")
+        // 對第 i 個 worker，算它的區間
+        let start = i as u64 * chunk + 1;
+        let mut end = (i as u64 + 1) * chunk;
+        if end > n {
+            end = n;
+        }
+
+        thread::spawn(move || {
+            // 如果因為 min/ceil 邏輯導致空區間，直接回 0
+            let local_sum = if start > end {
+                0
+            } else {
+                (start..=end).sum::<u64>()
+            };
+
+            tx.send(local_sum).expect("receiver dropped");
+        });
+    }
+
+    drop(tx); // 很重要：關閉原始 sender，讓 rx 知道何時結束
+
+    // 收集所有部分和
+    rx.iter().sum()
 }
 
 // ============================================================
@@ -111,6 +201,14 @@ fn main() {
     println!("Expected result: {}", expected);
     println!("{}", "=".repeat(60));
 
+    // Multi-thread version
+    let multithread_result =
+        benchmark("Multi-Thread version:", || sum_with_threads(n, num_workers));
+    assert_eq!(
+        multithread_result, expected,
+        "Thread version result mismatch!"
+    );
+
     // Multi-process version
     #[cfg(target_os = "linux")]
     {
@@ -119,12 +217,6 @@ fn main() {
         });
         assert_eq!(result, expected, "Process version result mismatch!");
     }
-
-    // Multi-thread version
-    let result = benchmark("Multi-Thread version:", || {
-        sum_with_threads(n, num_workers)
-    });
-    assert_eq!(result, expected, "Thread version result mismatch!");
 
     println!("{}", "=".repeat(60));
     println!("Both versions produced correct results!");

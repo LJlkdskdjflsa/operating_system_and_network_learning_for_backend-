@@ -318,8 +318,8 @@ Build habits of observing your programs with these tools:
 
 **Chapter 1 Checkpoint**
 
-- [ ] Complete `checkpoint.md` self-assessment
-- [ ] Can explain "code ↔ syscall" correspondence
+- [x] Complete `checkpoint.md` self-assessment
+- [x] Can explain "code ↔ syscall" correspondence
 
 ---
 
@@ -327,29 +327,29 @@ Build habits of observing your programs with these tools:
 
 **2.1 Process & Thread**
 
-- [ ] Read theory
-- [ ] Complete Lab 1: Process vs Thread comparison
-  - [ ] Read README and understand requirements
-  - [ ] Implementation
-    - [ ] Implement `sum_with_processes(n, num_workers)` using `nix::unistd::fork()`
-    - [ ] Implement IPC (pipes or unix sockets) for process communication
-    - [ ] Implement `sum_with_threads(n, num_workers)` with thread spawn
-    - [ ] Both versions produce correct parallel sum results
-    - [ ] Run performance comparison showing execution time
-  - [ ] Run `cargo test` and pass all tests
-  - [ ] Compare with solution
-- [ ] Complete Lab 2: Thread Pool
-  - [ ] Read README and understand requirements
-  - [ ] Implementation
-    - [ ] Create `ThreadPool` struct with fixed number of workers
-    - [ ] Workers wait for jobs using blocking receive (not busy-wait)
-    - [ ] Implement `execute()` method to submit tasks
-    - [ ] Jobs are `Box<dyn FnOnce() + Send + 'static>`
-    - [ ] Use `mpsc::channel` to send jobs to workers
-    - [ ] Use `Arc<Mutex<Receiver>>` to share receiver among workers
-    - [ ] Implement graceful shutdown when pool is dropped
-  - [ ] Run `cargo test` and pass all tests
-  - [ ] Compare with solution
+- [x] Read theory
+- [x] Complete Lab 1: Process vs Thread comparison
+  - [x] Read README and understand requirements
+  - [x] Implementation
+    - [x] Implement `sum_with_processes(n, num_workers)` using `nix::unistd::fork()`
+    - [x] Implement IPC (pipes or unix sockets) for process communication
+    - [x] Implement `sum_with_threads(n, num_workers)` with thread spawn
+    - [x] Both versions produce correct parallel sum results
+    - [x] Run performance comparison showing execution time
+  - [x] Run `cargo test` and pass all tests
+  - [x] Compare with solution
+- [x] Complete Lab 2: Thread Pool
+  - [x] Read README and understand requirements
+  - [x] Implementation
+    - [x] Create `ThreadPool` struct with fixed number of workers
+    - [x] Workers wait for jobs using blocking receive (not busy-wait)
+    - [x] Implement `execute()` method to submit tasks
+    - [x] Jobs are `Box<dyn FnOnce() + Send + 'static>`
+    - [x] Use `mpsc::channel` to send jobs to workers
+    - [x] Use `Arc<Mutex<Receiver>>` to share receiver among workers
+    - [x] Implement graceful shutdown when pool is dropped
+  - [x] Run `cargo test` and pass all tests
+  - [x] Compare with solution
 
 **2.2 Memory**
 
