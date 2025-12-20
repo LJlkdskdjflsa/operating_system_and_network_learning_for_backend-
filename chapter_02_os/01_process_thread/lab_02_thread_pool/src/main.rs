@@ -100,6 +100,19 @@ impl ThreadPool {
             sender.send(job).expect("Failed to send job to worker");
         }
     }
+
+    pub fn execute_with_result<F, R>(&self, job: F) -> mpsc::Receiver<R>
+    where
+        F: FnOnce() -> R + Send + 'static,
+        R: Send + 'static,
+    {
+        let (result_sender, result_receiver) = mpsc::channel();
+        self.execute(move || {
+            let result = job();
+            let _ = result_sender.send(result);
+        });
+        result_receiver
+    }
 }
 
 impl Drop for ThreadPool {
@@ -169,15 +182,14 @@ fn main() {
     // Give tasks time to complete
     thread::sleep(std::time::Duration::from_millis(500));
 
-    println!("\nSubmitting 4 more tasks...");
-    for i in 8..12 {
-        pool.execute(move || {
-            println!("  Task {} starting", i);
-            thread::sleep(std::time::Duration::from_millis(50));
-            println!("  Task {} done", i);
-        });
-    }
-
+    println!("\nSubmitting 1 task with a result...");
+    let (result_sender, result_receiver) = mpsc::channel();
+    pool.execute(move || {
+        let value = 2 + 3;
+        let _ = result_sender.send(value);
+    });
+    let value = result_receiver.recv().expect("Failed to receive result");
+    println!("  Result from task: {}", value);
     thread::sleep(std::time::Duration::from_millis(300));
 
     println!("\nDropping pool (should trigger graceful shutdown)...");
