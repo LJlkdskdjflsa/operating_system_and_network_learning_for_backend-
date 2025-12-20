@@ -354,35 +354,35 @@ Build habits of observing your programs with these tools:
 **2.2 Memory**
 
 - [x] Read theory
-- [ ] Complete Lab 3: Cache Locality
-  - [ ] Read README and understand requirements
-  - [ ] Implementation
-    - [ ] Implement `sum_sequential(arr)` - sum in order (good locality)
-    - [ ] Implement `sum_random(arr, indices)` - sum in random order (poor locality)
-    - [ ] Implement `sum_row_major(arr)` - iterate 2D array row-first
-    - [ ] Implement `sum_column_major(arr)` - iterate 2D array column-first
-    - [ ] Use large arrays (10 million elements)
-    - [ ] Run in release mode and measure performance
-    - [ ] Verify sequential > random, row-major > column-major
-  - [ ] Run `cargo test` and pass all tests
-  - [ ] Compare with solution
+- [x] Complete Lab 3: Cache Locality
+  - [x] Read README and understand requirements
+  - [x] Implementation
+    - [x] Implement `sum_sequential(arr)` - sum in order (good locality)
+    - [x] Implement `sum_random(arr, indices)` - sum in random order (poor locality)
+    - [x] Implement `sum_row_major(arr)` - iterate 2D array row-first
+    - [x] Implement `sum_column_major(arr)` - iterate 2D array column-first
+    - [x] Use large arrays (10 million elements)
+    - [x] Run in release mode and measure performance
+    - [x] Verify sequential > random, row-major > column-major
+  - [x] Run `cargo test` and pass all tests
+  - [x] Compare with solution
 
 **2.3 I/O Model**
 
-- [ ] Read theory
-- [ ] Complete Lab 4: Blocking Echo Server
-  - [ ] Read README and understand requirements
-  - [ ] Implementation
-    - [ ] Listen on TCP port 8080
-    - [ ] Accept incoming connections
-    - [ ] Spawn a thread for each connection
-    - [ ] Echo back whatever the client sends
-    - [ ] Handle client disconnection gracefully (read returns 0)
-    - [ ] Log connection and disconnection events
-  - [ ] Run `cargo test` and pass all tests
-  - [ ] Compare with solution
-- [ ] Complete Lab 5: Async Echo Server
-  - [ ] Read README and understand requirements
+- [x] Read theory
+- [x] Complete Lab 4: Blocking Echo Server
+  - [x] Read README and understand requirements
+  - [x] Implementation
+    - [x] Listen on TCP port 8080
+    - [x] Accept incoming connections
+    - [x] Spawn a thread for each connection
+    - [x] Echo back whatever the client sends
+    - [x] Handle client disconnection gracefully (read returns 0)
+    - [x] Log connection and disconnection events
+  - [x] Run `cargo test` and pass all tests
+  - [x] Compare with solution
+- [x] Complete Lab 5: Async Echo Server
+  - [x] Read README and understand requirements
   - [ ] Implementation
     - [ ] Listen on TCP port 8080 asynchronously
     - [ ] Accept connections with `.await`

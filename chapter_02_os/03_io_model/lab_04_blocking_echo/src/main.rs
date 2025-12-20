@@ -71,20 +71,57 @@ fn handle_client(mut stream: TcpStream) {
     //    - If read returns 0, client disconnected - break
     //    - Echo data back (write_all)
     // 4. Log when connection closes
+    let peer_addr = stream
+        .peer_addr()
+        .map(|addr| addr.to_string())
+        .unwrap_or_else(|_| "<unkown>".to_string());
+    let mut buffer = [0u8; 1024];
 
-    todo!("Implement handle_client")
+    loop {
+        let bytes_read = match stream.read(&mut buffer) {
+            Ok(0) => break,
+            Ok(n) => n,
+            Err(err) => {
+                eprintln!("Read error from {peer_addr}: {err}");
+                break;
+            }
+        };
+
+        if let Err(err) = stream.write_all(&buffer[..bytes_read]) {
+            eprintln!("Write error to {peer_addr}: {err}");
+            break;
+        }
+    }
 }
 
 fn main() {
     let addr = "127.0.0.1:8080";
 
     // TODO: Implement
-    // 1. Create TcpListener bound to addr
-    // 2. Print "Listening on {addr}"
     // 3. Loop accepting connections:
     //    - On accept, print "New connection from {addr}"
     //    - Spawn a thread to handle the client
     //    - (Don't wait for the thread - let it run independently)
 
-    todo!("Implement main server loop")
+    let listener = TcpListener::bind(addr).expect("failed to bind TCP listener");
+    println!("Listening on {addr}");
+
+    // let _ = listener;
+
+    for stream in listener.incoming() {
+        match stream {
+            Ok(stream) => {
+                let peer_addr = stream
+                    .peer_addr()
+                    .map(|addr| addr.to_string())
+                    .unwrap_or_else(|_| "<unknow>".to_string());
+                println!("New connection from {peer_addr}");
+                thread::spawn(|| handle_client(stream));
+            }
+            Err(err) => {
+                eprint!("Accept error: {err}")
+            }
+        }
+    }
+    // todo!("Implement main server loop")
 }

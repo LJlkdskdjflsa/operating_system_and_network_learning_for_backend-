@@ -45,6 +45,8 @@
 use rand::seq::SliceRandom;
 use std::time::Instant;
 
+const DIM: usize = 2000;
+
 // ============================================================
 // TODO: Implement these benchmark functions
 // ============================================================
@@ -53,28 +55,39 @@ use std::time::Instant;
 fn sum_sequential(arr: &[i64]) -> i64 {
     // TODO: Simply sum all elements in order
     // This has excellent spatial locality
-    todo!("Implement sequential sum")
+    arr.iter().sum()
 }
 
 /// Sum array elements in random order (poor locality)
 fn sum_random(arr: &[i64], indices: &[usize]) -> i64 {
     // TODO: Sum elements using the shuffled indices
     // This has poor spatial locality
-    todo!("Implement random sum")
+    indices.iter().map(|&i| arr[i]).sum()
 }
 
 /// Sum 2D array in row-major order (good locality for Rust arrays)
-fn sum_row_major(arr: &[[i64; 1000]; 1000]) -> i64 {
-    // TODO: Iterate rows first, then columns
-    // for i in 0..1000 { for j in 0..1000 { ... } }
-    todo!("Implement row-major sum")
+fn sum_row_major(arr: &[i64], dim: usize) -> i64 {
+    // Access contiguous memory row by row.
+    let mut sum = 0i64;
+    for i in 0..dim {
+        let row_start = i * dim;
+        for j in 0..dim {
+            sum += arr[row_start + j];
+        }
+    }
+    sum
 }
 
 /// Sum 2D array in column-major order (poor locality for Rust arrays)
-fn sum_column_major(arr: &[[i64; 1000]; 1000]) -> i64 {
-    // TODO: Iterate columns first, then rows
-    // for j in 0..1000 { for i in 0..1000 { ... } }
-    todo!("Implement column-major sum")
+fn sum_column_major(arr: &[i64], dim: usize) -> i64 {
+    // Access with a large stride between elements in memory.
+    let mut sum = 0i64;
+    for j in 0..dim {
+        for i in 0..dim {
+            sum += arr[i * dim + j];
+        }
+    }
+    sum
 }
 
 // ============================================================
@@ -102,6 +115,7 @@ fn main() {
     }
 
     const SIZE: usize = 10_000_000;
+    const ROW_COL_ITERS: usize = 8;
 
     println!("=== Cache Locality Experiment ===\n");
     println!("Array size: {} elements ({} MB)\n", SIZE, SIZE * 8 / 1_000_000);
@@ -128,22 +142,32 @@ fn main() {
     println!("Results match: {}\n", seq_result);
 
     // Part 2: Row-major vs Column-major
-    println!("--- 2D Array Access (1000x1000) ---");
+    println!("--- 2D Array Access ({}x{}) ---", DIM, DIM);
     println!("Creating 2D array...");
 
-    // Create 2D array on heap (too big for stack)
-    let arr_2d: Box<[[i64; 1000]; 1000]> = {
-        let mut arr = Box::new([[0i64; 1000]; 1000]);
-        for i in 0..1000 {
-            for j in 0..1000 {
-                arr[i][j] = (i * 1000 + j) as i64;
-            }
+    // Create 2D array on heap (flat row-major storage).
+    let mut arr_2d: Vec<i64> = vec![0; DIM * DIM];
+    for i in 0..DIM {
+        let row_start = i * DIM;
+        for j in 0..DIM {
+            arr_2d[row_start + j] = (row_start + j) as i64;
         }
-        arr
-    };
+    }
 
-    let row_result = benchmark("Row-major sum:", || sum_row_major(&arr_2d));
-    let col_result = benchmark("Column-major sum:", || sum_column_major(&arr_2d));
+    let row_result = benchmark("Row-major sum:", || {
+        let mut total = 0i64;
+        for _ in 0..ROW_COL_ITERS {
+            total += sum_row_major(&arr_2d, DIM);
+        }
+        total
+    });
+    let col_result = benchmark("Column-major sum:", || {
+        let mut total = 0i64;
+        for _ in 0..ROW_COL_ITERS {
+            total += sum_column_major(&arr_2d, DIM);
+        }
+        total
+    });
 
     assert_eq!(row_result, col_result, "Results should match!");
     println!("Results match: {}\n", row_result);

@@ -19,14 +19,14 @@ After completing this section, you will be able to:
 
 CPU operations are **fast** (nanoseconds). I/O operations are **slow**:
 
-| Operation | Time |
-|-----------|------|
-| CPU instruction | ~0.3 ns |
-| L1 cache access | ~1 ns |
-| Main memory | ~100 ns |
-| SSD read | ~100,000 ns (100 μs) |
-| Network round-trip | ~1,000,000 ns (1 ms) |
-| HDD seek | ~10,000,000 ns (10 ms) |
+| Operation          | Time                   |
+| ------------------ | ---------------------- |
+| CPU instruction    | ~0.3 ns                |
+| L1 cache access    | ~1 ns                  |
+| Main memory        | ~100 ns                |
+| SSD read           | ~100,000 ns (100 μs)   |
+| Network round-trip | ~1,000,000 ns (1 ms)   |
+| HDD seek           | ~10,000,000 ns (10 ms) |
 
 When your program does I/O, the CPU sits idle waiting. This is wasteful!
 
@@ -181,13 +181,13 @@ Ask the OS: "Tell me when any of these file descriptors is ready."
 
 ### Evolution of APIs
 
-| API | Platforms | Scalability |
-|-----|-----------|-------------|
-| `select` | All Unix | O(n) - checks all fds every time |
-| `poll` | All Unix | O(n) - slightly better than select |
-| `epoll` | Linux | O(1) - only returns ready fds |
-| `kqueue` | BSD/macOS | O(1) - similar to epoll |
-| `io_uring` | Linux 5.1+ | Even better - async syscalls |
+| API        | Platforms  | Scalability                        |
+| ---------- | ---------- | ---------------------------------- |
+| `select`   | All Unix   | O(n) - checks all fds every time   |
+| `poll`     | All Unix   | O(n) - slightly better than select |
+| `epoll`    | Linux      | O(1) - only returns ready fds      |
+| `kqueue`   | BSD/macOS  | O(1) - similar to epoll            |
+| `io_uring` | Linux 5.1+ | Even better - async syscalls       |
 
 ### Why epoll Wins
 
@@ -272,6 +272,7 @@ fn main() {
 ### The Problem with Event Loops
 
 Manual event loops are complex:
+
 - Must manage state machines manually
 - Callback hell
 - Hard to read and maintain
@@ -337,12 +338,12 @@ async fn main() {
 
 ### Cooperative vs Preemptive
 
-| Threads | Async Tasks |
-|---------|-------------|
+| Threads                              | Async Tasks                          |
+| ------------------------------------ | ------------------------------------ |
 | Preemptive: OS can interrupt anytime | Cooperative: task yields at `.await` |
-| ~2-8 MB stack each | ~few KB each |
-| Expensive context switch | Cheap task switch |
-| Blocking is fine | Blocking blocks the worker! |
+| ~2-8 MB stack each                   | ~few KB each                         |
+| Expensive context switch             | Cheap task switch                    |
+| Blocking is fine                     | Blocking blocks the worker!          |
 
 **Warning**: Don't block in async code!
 
@@ -388,12 +389,12 @@ async fn good() {
 
 ### Real-World Examples
 
-| Application | I/O Model | Why |
-|-------------|-----------|-----|
-| Simple CLI tool | Blocking | Simple, few operations |
-| Database server | Thread pool | CPU-bound query processing |
-| Web server (Nginx) | epoll | Many connections, mostly waiting |
-| Rust web framework (Axum) | Tokio | Ergonomic async, high performance |
+| Application               | I/O Model   | Why                               |
+| ------------------------- | ----------- | --------------------------------- |
+| Simple CLI tool           | Blocking    | Simple, few operations            |
+| Database server           | Thread pool | CPU-bound query processing        |
+| Web server (Nginx)        | epoll       | Many connections, mostly waiting  |
+| Rust web framework (Axum) | Tokio       | Ergonomic async, high performance |
 
 ---
 
