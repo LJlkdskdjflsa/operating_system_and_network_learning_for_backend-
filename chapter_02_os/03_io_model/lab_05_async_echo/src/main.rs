@@ -53,14 +53,35 @@ use tokio::net::{TcpListener, TcpStream};
 async fn handle_client(mut stream: TcpStream) {
     // TODO: Implement (very similar to blocking version, but with .await)
     // 1. Get client address for logging
-    // 2. Create a buffer for reading
-    // 3. Loop:
-    //    - Read data from stream with .await
-    //    - If read returns 0, client disconnected - break
-    //    - Echo data back with write_all().await
-    // 4. Log when connection closes
+    let peer_address = stream
+        .peer_addr()
+        .map(|addr| addr.to_string())
+        .unwrap_or_else(|_| "unknown".to_string());
 
-    todo!("Implement async handle_client")
+    println!("[{}]", peer_address);
+    // 2. Create a buffer for reading
+    let mut buffer = [0u8; 1024];
+    // 3. Loop:
+    loop {
+        //    - Read data from stream with .await
+        match stream.read(&mut buffer).await {
+            Ok(0) => {
+                println!("[{}] Dissconnected", peer_address);
+                break;
+            }
+            Ok(n) => {
+                if let Err(err) = stream.write_all(&buffer[..n]).await {
+                    println!("[{}] Write erro{}", peer_address, err);
+                }
+            }
+            Err(err) => {
+                println!("[{}] Read erro{}", peer_address, err);
+            }
+        }
+        //    - If read returns 0, client disconnected - break
+        //    - Echo data back with write_all().await
+        // 4. Log when connection closes
+    }
 }
 
 #[tokio::main]
@@ -75,5 +96,22 @@ async fn main() {
     //    - Spawn an async task with tokio::spawn() to handle the client
     //    - (The task runs concurrently, not in a new thread)
 
-    todo!("Implement async main server loop")
+    let listener = TcpListener::bind(addr).await.expect("Failed to bind");
+
+    println!("Async Echo Server (Tokio)");
+    println!("Listening on {}", addr);
+
+    loop {
+        match listener.accept().await {
+            Ok((_socket, addr)) => {
+                println!("New connection from {}", addr);
+                tokio::spawn(async move {
+                    handle_client(_socket).await;
+                });
+            }
+            Err(err) => {
+                eprintln!("Accept error: {}", err);
+            }
+        }
+    }
 }

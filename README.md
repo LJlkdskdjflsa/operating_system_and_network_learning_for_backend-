@@ -384,14 +384,14 @@ Build habits of observing your programs with these tools:
 - [x] Complete Lab 5: Async Echo Server
   - [x] Read README and understand requirements
   - [ ] Implementation
-    - [ ] Listen on TCP port 8080 asynchronously
-    - [ ] Accept connections with `.await`
-    - [ ] Spawn async task (not thread!) using `tokio::spawn`
-    - [ ] Echo back data using `AsyncReadExt` and `AsyncWriteExt`
-    - [ ] Handle client disconnection gracefully
-    - [ ] Observe that thread count stays low with many connections
-  - [ ] Run `cargo test` and pass all tests
-  - [ ] Compare with solution
+    - [x] Listen on TCP port 8080 asynchronously
+    - [x] Accept connections with `.await`
+    - [x] Spawn async task (not thread!) using `tokio::spawn`
+    - [x] Echo back data using `AsyncReadExt` and `AsyncWriteExt`
+    - [x] Handle client disconnection gracefully
+    - [x] Observe that thread count stays low with many connections
+  - [x] Run `cargo test` and pass all tests
+  - [x] Compare with solution
 
 ---
 
