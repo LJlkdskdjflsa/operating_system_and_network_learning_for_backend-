@@ -17,6 +17,7 @@ Link Layer           (Ethernet, WiFi)
 ```
 
 The transport layer provides:
+
 - **Multiplexing**: Multiple applications sharing one IP address (via ports)
 - **Data delivery**: Getting bytes from A to B
 
@@ -67,6 +68,7 @@ Client                          Server
 ```
 
 Key fields:
+
 - **Sequence Number**: Position of this data in the stream
 - **Acknowledgment Number**: Next expected byte from other side
 - **Flags**: SYN, ACK, FIN, RST, etc.
@@ -212,26 +214,28 @@ let (n, _) = socket.recv_from(&mut buffer)?;
 
 ## TCP vs UDP Comparison
 
-| Feature | TCP | UDP |
-|---------|-----|-----|
-| Connection | Required | None |
-| Reliability | Guaranteed | Best effort |
-| Ordering | Guaranteed | None |
-| Speed | Slower | Faster |
-| Header size | 20+ bytes | 8 bytes |
-| Flow control | Yes | No |
-| Congestion control | Yes | No |
-| Use case | Files, web, email | Video, gaming, DNS |
+| Feature            | TCP               | UDP                |
+| ------------------ | ----------------- | ------------------ |
+| Connection         | Required          | None               |
+| Reliability        | Guaranteed        | Best effort        |
+| Ordering           | Guaranteed        | None               |
+| Speed              | Slower            | Faster             |
+| Header size        | 20+ bytes         | 8 bytes            |
+| Flow control       | Yes               | No                 |
+| Congestion control | Yes               | No                 |
+| Use case           | Files, web, email | Video, gaming, DNS |
 
 ## When to Use Which?
 
 ### Use TCP When:
+
 - **Data integrity is critical**: File transfers, database queries
 - **Order matters**: HTTP requests, SSH sessions
 - **You need acknowledgment**: Financial transactions
 - **Simplicity**: TCP handles reliability for you
 
 ### Use UDP When:
+
 - **Speed > reliability**: Live video, voice chat
 - **Small messages**: DNS queries, NTP
 - **Broadcast/multicast**: Service discovery

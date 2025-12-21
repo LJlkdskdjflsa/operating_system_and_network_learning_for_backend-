@@ -399,31 +399,31 @@ Build habits of observing your programs with these tools:
 
 **3.1 TCP/UDP**
 
-- [ ] Read theory
-- [ ] Complete Lab 1: TCP Chat Server
-  - [ ] Read README and understand requirements
-  - [ ] Implementation
-    - [ ] Listen on TCP port 8080
-    - [ ] Accept multiple clients concurrently
-    - [ ] Broadcast message to all other connected clients
-    - [ ] Handle client disconnection gracefully
-    - [ ] Show connection/disconnection notifications
-    - [ ] Use `tokio::sync::broadcast` or `Arc<Mutex<HashMap>>` for shared state
-    - [ ] Each client has unique ID
-  - [ ] Run `cargo test` and pass all tests
-  - [ ] Compare with solution
+- [x] Read theory
+- [x] Complete Lab 1: TCP Chat Server
+  - [x] Read README and understand requirements
+  - [x] Implementation
+    - [x] Listen on TCP port 8080
+    - [x] Accept multiple clients concurrently
+    - [x] Broadcast message to all other connected clients
+    - [x] Handle client disconnection gracefully
+    - [x] Show connection/disconnection notifications
+    - [x] Use `tokio::sync::broadcast` or `Arc<Mutex<HashMap>>` for shared state
+    - [x] Each client has unique ID
+  - [x] Run `cargo test` and pass all tests
+  - [x] Compare with solution
 - [ ] Complete Lab 2: UDP Echo Server
-  - [ ] Read README and understand requirements
-  - [ ] Implementation
-    - [ ] Listen on UDP port 8080
-    - [ ] Receive datagrams using `recv_from()`
-    - [ ] Echo each datagram back using `send_to()`
-    - [ ] Print statistics (packets received, bytes processed)
-    - [ ] Use `AtomicU64` for counters
-    - [ ] Understand difference from TCP (no connection, per-datagram)
-  - [ ] Run `cargo test` and pass all tests
-  - [ ] Compare with solution
-- [ ] Use tcpdump/Wireshark to observe packets
+  - [x] Read README and understand requirements
+  - [x] Implementation
+    - [x] Listen on UDP port 8080
+    - [x] Receive datagrams using `recv_from()`
+    - [x] Echo each datagram back using `send_to()`
+    - [x] Print statistics (packets received, bytes processed)
+    - [x] Use `AtomicU64` for counters
+    - [x] Understand difference from TCP (no connection, per-datagram)
+  - [x] Run `cargo test` and pass all tests
+  - [x] Compare with solution
+- [x] Use tcpdump/Wireshark to observe packets
 
 **3.2 HTTP**
 

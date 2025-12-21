@@ -47,8 +47,8 @@
 //! - [ ] Shows packet statistics
 //! - [ ] Handles multiple clients (no connection state)
 
-use tokio::net::UdpSocket;
 use std::sync::atomic::{AtomicU64, Ordering};
+use tokio::net::UdpSocket;
 
 // ============================================================
 // TODO: Implement the UDP echo server
@@ -63,6 +63,9 @@ async fn main() {
     let addr = "127.0.0.1:8080";
 
     // TODO: Implement
+    let socket = UdpSocket::bind(addr)
+        .await
+        .expect("bind failed");
     // 1. Create UdpSocket bound to addr
     // 2. Loop:
     //    - recv_from() to get datagram and sender address
@@ -70,6 +73,27 @@ async fn main() {
     //    - Print received data info
     //    - send_to() to echo back to sender
     // 3. Handle errors gracefully
+    let mut buf = [0u8; 2048];
 
-    todo!("Implement UDP echo server")
+    loop {
+        match socket.recv_from(&mut buf).await {
+            Ok((len, peer)) => {
+                PACKETS_RECEIVED.fetch_add(1, Ordering::Relaxed);
+                BYTES_PROCESSED.fetch_add(len as u64, Ordering::Relaxed);
+
+                let msg = String::from_utf8_lossy(&buf[..len]);
+                println!("Received {} bytes from {}: {}", len, peer, msg);
+
+                match socket.send_to(&buf[..len], &peer).await {
+                    Ok(_) => {}
+                    Err(err) => {
+                        eprintln!("send_to error: {}", err);
+                    }
+                }
+            }
+            Err(err) => {
+                eprintln!("recv_from error: {}", err);
+            }
+        }
+    }
 }

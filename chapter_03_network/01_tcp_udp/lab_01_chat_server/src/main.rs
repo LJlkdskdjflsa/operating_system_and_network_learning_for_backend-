@@ -44,10 +44,10 @@
 //! - [ ] Disconnection is handled gracefully
 //! - [ ] Connection notifications shown
 
-use tokio::net::{TcpListener, TcpStream};
-use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
-use tokio::sync::broadcast;
 use std::net::SocketAddr;
+use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
+use tokio::net::{TcpListener, TcpStream};
+use tokio::sync::broadcast;
 
 // ============================================================
 // TODO: Implement the chat server
@@ -57,28 +57,102 @@ use std::net::SocketAddr;
 async fn handle_client(
     stream: TcpStream,
     addr: SocketAddr,
-    tx: broadcast::Sender<(String, SocketAddr)>,
+    sender: broadcast::Sender<(String, SocketAddr)>,
 ) {
-    // TODO: Implement
-    // 1. Subscribe to the broadcast channel
-    // 2. Split the stream into reader and writer
-    // 3. Spawn two tasks:
-    //    a. Read from client, broadcast to channel
-    //    b. Receive from channel, write to client (skip own messages)
-    // 4. Handle disconnection
+    // Subscribe to receive broadcast messages
+    let mut rx = sender.subscribe();
 
-    todo!("Implement handle_client")
+    // Split the stream into reader and writer
+    let (reader, mut writer) = stream.into_split();
+    let mut reader = BufReader::new(reader);
+    let mut line = String::new();
+
+    // Notify about new connection
+    let join_msg = format!("[{}] joined the chat\n", addr);
+    println!("{}", join_msg.trim());
+    let _ = sender.send((join_msg, addr));
+
+    loop {
+        tokio::select! {
+            // Read from client
+            result = reader.read_line(&mut line) => {
+                match result {
+                    Ok(0) => {
+                        // Client disconnected
+                        let leave_msg = format!("[{}] left the chat\n", addr);
+                        println!("{}", leave_msg.trim());
+                        let _ = sender.send((leave_msg, addr));
+                        break;
+                    }
+                    Ok(_) => {
+                        // Broadcast message to all clients
+                        let msg = format!("[{}]: {}", addr, line);
+                        println!("{}", msg.trim());
+                        let _ = sender.send((msg, addr));
+                        line.clear();
+                    }
+                    Err(err) => {
+                        eprintln!("[{}] Read error: {}", addr, err);
+                        break;
+                    }
+                }
+            }
+
+            // Receive broadcast messages and send to this client
+            result = rx.recv() => {
+                match result {
+                    Ok((msg, sender_addr)) => {
+                        // Don't send message back to sender
+                        if sender_addr != addr {
+                            if let Err(err) = writer.write_all(msg.as_bytes()).await {
+                                eprintln!("[{}] Write error: {}", addr, err);
+                                break;
+                            }
+                        }
+                    }
+                    Err(broadcast::error::RecvError::Lagged(n)) => {
+                        eprintln!("[{}] Lagged {} messages", addr, n);
+                    }
+                    Err(broadcast::error::RecvError::Closed) => {
+                        break;
+                    }
+                }
+            }
+        }
+    }
 }
 
 #[tokio::main]
 async fn main() {
-    let addr = "127.0.0.1:8080";
+    // let addr = "127.0.0.1:8080";
+    let addr = "0.0.0.0:8080";
 
-    // TODO: Implement
-    // 1. Create a broadcast channel for message distribution
+
+    // Create a broadcast channel for message distribution
+    let (tx, _rx) = broadcast::channel::<(String, SocketAddr)>(100);
+
+    let listener = TcpListener::bind(addr).await.expect("Failed to bind");
+
+    println!("TCP Chat Server");
+    println!("Listening on {}", addr);
+    println!("\nTest with: nc localhost 8080");
+    println!("Open multiple terminals to chat!\n");
     // 2. Create TcpListener
     // 3. Loop accepting connections
-    // 4. Spawn handle_client for each connection
+    loop {
+        match listener.accept().await {
+            Ok((stream, client_addr)) => {
+                println!("New connection from {}", client_addr);
 
-    todo!("Implement main server loop")
+                let tx_clone = tx.clone();
+                tokio::spawn(async move {
+                    handle_client(stream, client_addr, tx_clone).await;
+                });
+            }
+            Err(err) => {
+                eprintln!("Accept error: {}", err);
+            }
+        }
+    }
+    // 4. Spawn handle_client for each connection
 }
