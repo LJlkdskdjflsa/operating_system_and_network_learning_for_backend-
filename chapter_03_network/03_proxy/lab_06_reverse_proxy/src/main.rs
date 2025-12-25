@@ -1,4 +1,4 @@
-//! Lab 5: Reverse Proxy
+//! Lab 6: Reverse Proxy
 //!
 //! ## Goal
 //! Build a simple HTTP reverse proxy with round-robin load balancing

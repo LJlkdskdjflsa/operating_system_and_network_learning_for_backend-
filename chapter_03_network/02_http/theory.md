@@ -476,3 +476,4 @@ let app = Router::new()
 
 1. **Lab 3: Raw HTTP Server** - Parse and respond to HTTP without frameworks
 2. **Lab 4: Axum REST API** - Build a complete CRUD API with Axum
+3. **Lab 5: Streaming HTTP (Rust)** - Implement a streaming response (chunked or SSE)

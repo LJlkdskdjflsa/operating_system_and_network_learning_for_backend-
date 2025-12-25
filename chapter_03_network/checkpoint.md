@@ -29,7 +29,7 @@ Answer these questions to verify your understanding:
    - Broadcasting messages
    - Client tracking
 
-### HTTP (Lab 3-4)
+### HTTP (Lab 3-5)
 
 5. **What are the components of an HTTP request?**
    - Method (GET, POST, etc.)
@@ -55,7 +55,7 @@ Answer these questions to verify your understanding:
    - Query parameters
    - Request extractors
 
-### Proxy (Lab 5)
+### Proxy (Lab 6)
 
 9. **What is a reverse proxy?**
    - Client-facing server

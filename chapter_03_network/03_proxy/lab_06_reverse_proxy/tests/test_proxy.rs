@@ -1,4 +1,4 @@
-//! Lab 5 Tests
+//! Lab 6 Tests
 
 use std::io::{Read, Write};
 use std::net::TcpStream;

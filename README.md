@@ -427,33 +427,33 @@ Build habits of observing your programs with these tools:
 
 **3.2 HTTP**
 
-- [ ] Read theory
-- [ ] Complete Lab 3: Raw HTTP Server
-  - [ ] Read README and understand requirements
-  - [ ] Implementation
-    - [ ] Listen on port 8080
-    - [ ] Parse HTTP requests manually (request line, headers, body)
-    - [ ] Route based on method and path
-    - [ ] Implement `GET /` → "Hello, World!"
-    - [ ] Implement `GET /hello/{name}` → "Hello, {name}!"
-    - [ ] Implement `GET /time` → current time
-    - [ ] Implement 404 Not Found for other routes
+- [x] Read theory
+- [x] Complete Lab 3: Raw HTTP Server
+  - [x] Read README and understand requirements
+  - [x] Implementation
+    - [x] Listen on port 8080
+    - [x] Parse HTTP requests manually (request line, headers, body)
+    - [x] Route based on method and path
+    - [x] Implement `GET /` → "Hello, World!"
+    - [x] Implement `GET /hello/{name}` → "Hello, {name}!"
+    - [x] Implement `GET /time` → current time
+    - [x] Implement 404 Not Found for other routes
     - [ ] Return proper HTTP responses with headers (CRLF `\r\n`)
-  - [ ] Run `cargo test` and pass all tests
-  - [ ] Compare with solution
+  - [x] Run `cargo test` and pass all tests
+  - [x] Compare with solution
 - [ ] Complete Lab 4: Axum REST API
-  - [ ] Read README and understand requirements
-  - [ ] Implementation
-    - [ ] Store items in `Arc<Mutex<HashMap>>`
-    - [ ] Implement `GET /items` - List all items
-    - [ ] Implement `POST /items` - Create new item (returns 201)
-    - [ ] Implement `GET /items/:id` - Get single item (returns 404 if not found)
-    - [ ] Implement `PUT /items/:id` - Update item
-    - [ ] Implement `DELETE /items/:id` - Delete item
-    - [ ] Return proper JSON responses with appropriate status codes
-    - [ ] Handle concurrent requests safely
-  - [ ] Run `cargo test` and pass all tests
-  - [ ] Compare with solution
+  - [x] Read README and understand requirements
+  - [x] Implementation
+    -[x] Store items in `Arc<Mutex<HashMap>>`
+    -[x] Implement `GET /items` - List all items
+    -[x] Implement `POST /items` - Create new item (returns 201)
+    -[x] Implement `GET /items/:id` - Get single item (returns 404 if not found)
+    -[x] Implement `PUT /items/:id` - Update item
+    -[x] Implement `DELETE /items/:id` - Delete item
+    -[x] Return proper JSON responses with appropriate status codes
+    -[x] Handle concurrent requests safely
+  -[x] Run `cargo test` and pass all tests
+  -[x] Compare with solution
 
 **3.3 TLS & Proxy**
 

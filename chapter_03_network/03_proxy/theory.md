@@ -443,4 +443,4 @@ impl CircuitBreaker {
 
 ## Lab
 
-**Lab 5: Reverse Proxy** - Build a simple HTTP reverse proxy with round-robin load balancing
+**Lab 6: Reverse Proxy** - Build a simple HTTP reverse proxy with round-robin load balancing

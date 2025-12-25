@@ -35,10 +35,11 @@ chapter_03_network/
 ├── 02_http/
 │   ├── theory.md               # HTTP protocol, REST, headers
 │   ├── lab_03_raw_http/        # HTTP server from scratch
-│   └── lab_04_axum_api/        # REST API with Axum
+│   ├── lab_04_axum_api/        # REST API with Axum
+│   └── lab_05_streaming_http/  # Streaming HTTP responses
 └── 03_proxy/
     ├── theory.md               # Reverse proxy, load balancing
-    └── lab_05_reverse_proxy/   # Simple reverse proxy
+    └── lab_06_reverse_proxy/   # Simple reverse proxy
 ```
 
 ## Prerequisites
@@ -55,7 +56,8 @@ chapter_03_network/
 | Lab 2 | UDP Echo | UDP, datagrams, packet handling |
 | Lab 3 | Raw HTTP Server | HTTP parsing, request/response |
 | Lab 4 | Axum REST API | Framework, routing, JSON |
-| Lab 5 | Reverse Proxy | Proxying, load balancing |
+| Lab 5 | Streaming HTTP | Chunked, SSE, streaming responses |
+| Lab 6 | Reverse Proxy | Proxying, load balancing |
 
 ## Tools for Observation
 
