@@ -441,7 +441,7 @@ Build habits of observing your programs with these tools:
     - [ ] Return proper HTTP responses with headers (CRLF `\r\n`)
   - [x] Run `cargo test` and pass all tests
   - [x] Compare with solution
-- [ ] Complete Lab 4: Axum REST API
+- [x] Complete Lab 4: Axum REST API
   - [x] Read README and understand requirements
   - [x] Implementation
     -[x] Store items in `Arc<Mutex<HashMap>>`
@@ -457,18 +457,18 @@ Build habits of observing your programs with these tools:
 
 **3.3 TLS & Proxy**
 
-- [ ] Read theory
-- [ ] Complete Lab 5: Reverse Proxy
-  - [ ] Read README and understand requirements
-  - [ ] Implementation
-    - [ ] Listen on port 8080
-    - [ ] Forward requests to multiple backend servers
-    - [ ] Implement round-robin load balancing using `AtomicUsize`
-    - [ ] Add `X-Forwarded-For` header
-    - [ ] Handle backend failures gracefully (don't crash proxy)
-    - [ ] Read HTTP request, connect to backend, forward request and response
-  - [ ] Run `cargo test` and pass all tests
-  - [ ] Compare with solution
+- [x] Read theory
+- [x] Complete Lab 5: Reverse Proxy
+  - [x] Read README and understand requirements
+  - [x] Implementation
+    - [x] Listen on port 8080
+    - [x] Forward requests to multiple backend servers
+    - [x] Implement round-robin load balancing using `AtomicUsize`
+    - [x] Add `X-Forwarded-For` header
+    - [x] Handle backend failures gracefully (don't crash proxy)
+    - [x] Read HTTP request, connect to backend, forward request and response
+  - [x] Run `cargo test` and pass all tests
+  - [x] Compare with solution
 
 ---
 

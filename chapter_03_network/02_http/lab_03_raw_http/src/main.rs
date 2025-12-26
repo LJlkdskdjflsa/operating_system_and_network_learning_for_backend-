@@ -176,9 +176,10 @@ async fn handle_connection(mut stream: TcpStream) {
 
 #[tokio::main]
 async fn main() {
-    let addr = "127.0.0.1:8080";
+    let port = std::env::args().nth(1).unwrap_or_else(|| "8080".to_string());
+    let addr = format!("127.0.0.1:{}", port);
 
-    print!("start server at: {:#?}", addr);
+    println!("start server at: {:#?}", addr);
     // TODO: Implement
     // 1. Bind listener
     let listener = TcpListener::bind(addr).await.expect("Failed to bind");
