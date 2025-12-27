@@ -476,33 +476,33 @@ Build habits of observing your programs with these tools:
 
 **4.1 SQL**
 
-- [ ] Read theory
-- [ ] Complete Lab 1: SQLx CRUD
-  - [ ] Read README and understand requirements
-  - [ ] Implementation
-    - [ ] Create User table with id, name, email fields
-    - [ ] Implement `init_db()` - create table on startup
-    - [ ] Implement `create_user()` - insert new user
-    - [ ] Implement `get_user(id)` - read user by ID
-    - [ ] Implement `list_users()` - get all users
-    - [ ] Implement `update_user(id, name)` - update user
-    - [ ] Implement `delete_user(id)` - delete user
-    - [ ] Use SQLx query macros for type safety
-    - [ ] Use `SqlitePool` for connection pool
-  - [ ] Run `cargo test` and pass all tests
-  - [ ] Compare with solution
-- [ ] Complete Lab 2: Connection Pool Behavior
-  - [ ] Read README and understand requirements
-  - [ ] Implementation
-    - [ ] Create pool with configurable size (test 2, 5, 10)
-    - [ ] Simulate concurrent database queries using `tokio::spawn`
-    - [ ] Implement `slow_query()` with artificial delay
-    - [ ] Implement `run_concurrent_queries()` - spawn N concurrent queries
-    - [ ] Measure query latency with different pool sizes
-    - [ ] Calculate statistics: min, max, average, p95 latency
-    - [ ] Observe that queries wait when pool is exhausted
-  - [ ] Run `cargo test` and pass all tests
-  - [ ] Compare with solution
+- [x] Read theory
+- [x] Complete Lab 1: SQLx CRUD
+  - [x] Read README and understand requirements
+  - [x] Implementation
+    - [x] Create User table with id, name, email fields
+    - [x] Implement `init_db()` - create table on startup
+    - [x] Implement `create_user()` - insert new user
+    - [x] Implement `get_user(id)` - read user by ID
+    - [x] Implement `list_users()` - get all users
+    - [x] Implement `update_user(id, name)` - update user
+    - [x] Implement `delete_user(id)` - delete user
+    - [x] Use SQLx query macros for type safety
+    - [x] Use `SqlitePool` for connection pool
+  - [x] Run `cargo test` and pass all tests
+  - [x] Compare with solution
+- [x] Complete Lab 2: Connection Pool Behavior
+  - [x] Read README and understand requirements
+  - [x] Implementation
+    - [x] Create pool with configurable size (test 2, 5, 10)
+    - [x] Simulate concurrent database queries using `tokio::spawn`
+    - [x] Implement `slow_query()` with artificial delay
+    - [x] Implement `run_concurrent_queries()` - spawn N concurrent queries
+    - [x] Measure query latency with different pool sizes
+    - [x] Calculate statistics: min, max, average, p95 latency
+    - [x] Observe that queries wait when pool is exhausted
+  - [x] Run `cargo test` and pass all tests
+  - [x] Compare with solution
 
 **4.2 Caching**
 

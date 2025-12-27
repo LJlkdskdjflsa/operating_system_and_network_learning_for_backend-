@@ -62,35 +62,56 @@ struct CreateUser {
 async fn init_db(pool: &SqlitePool) -> Result<(), sqlx::Error> {
     // TODO: Create users table if not exists
     // Columns: id (INTEGER PRIMARY KEY), name (TEXT), email (TEXT UNIQUE)
+    sqlx::query(
+        r#"
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            email TEXT UNIQUE NOT NULL
+        )
+        "#,
+    )
+    .execute(pool)
+    .await?;
 
-    todo!("Implement init_db")
+    println!("Database initialized");
+    Ok(())
 }
 
 /// Create a new user
-async fn create_user(
-    pool: &SqlitePool,
-    user: CreateUser,
-) -> Result<User, sqlx::Error> {
+async fn create_user(pool: &SqlitePool, user: CreateUser) -> Result<User, sqlx::Error> {
     // TODO: Insert user and return the created user with id
+    let result = sqlx::query("INSERT INTO users (name, email) VALUES (?, ?)")
+        .bind(&user.name)
+        .bind(&user.email)
+        .execute(pool)
+        .await?;
 
-    todo!("Implement create_user")
+    let id = result.last_insert_rowid();
+
+    Ok(User {
+        id,
+        name: user.name,
+        email: user.email,
+    })
 }
 
 /// Get user by ID
-async fn get_user(
-    pool: &SqlitePool,
-    id: i64,
-) -> Result<Option<User>, sqlx::Error> {
+async fn get_user(pool: &SqlitePool, id: i64) -> Result<Option<User>, sqlx::Error> {
     // TODO: Select user by id, return None if not found
 
-    todo!("Implement get_user")
+    sqlx::query_as::<_, User>("SELECT id, name, email FROM users WHERE id = ?")
+        .bind(id)
+        .fetch_optional(pool)
+        .await
 }
 
 /// Get all users
 async fn list_users(pool: &SqlitePool) -> Result<Vec<User>, sqlx::Error> {
     // TODO: Select all users
-
-    todo!("Implement list_users")
+    sqlx::query_as::<_, User>("SELECT id, name, email FROM users ORDER BY id")
+        .fetch_all(pool)
+        .await
 }
 
 /// Update user
@@ -100,26 +121,113 @@ async fn update_user(
     name: String,
 ) -> Result<Option<User>, sqlx::Error> {
     // TODO: Update user name, return updated user
+    let result = sqlx::query("UPDATE users SET name = ? WHERE id = ?")
+        .bind(&name)
+        .bind(id)
+        .execute(pool)
+        .await?;
+    if result.rows_affected() == 0 {
+        return Ok(None);
+    }
 
-    todo!("Implement update_user")
+    get_user(pool, id).await
 }
 
 /// Delete user
-async fn delete_user(
-    pool: &SqlitePool,
-    id: i64,
-) -> Result<bool, sqlx::Error> {
+async fn delete_user(pool: &SqlitePool, id: i64) -> Result<bool, sqlx::Error> {
     // TODO: Delete user, return true if deleted
+    let result = sqlx::query("DELETE FROM users WHERE id = ?")
+        .bind(id)
+        .execute(pool)
+        .await?;
 
-    todo!("Implement delete_user")
+    Ok(result.rows_affected() > 0)
 }
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // TODO: Implement
-    // 1. Create in-memory SQLite pool
-    // 2. Initialize database
-    // 3. Demonstrate CRUD operations
+    println!("SQLx CRUD Demo\n");
 
-    todo!("Implement main")
+    // 1. Create in-memory SQLite pool
+    let pool = SqlitePoolOptions::new()
+        .max_connections(5)
+        .connect("sqlite::memory:")
+        .await?;
+
+    // 2. Initialize database
+    println!("=== Initializing Database ===");
+    init_db(&pool).await?;
+    // 3. Demonstrate CRUD operations
+    println!("\n=== CREATE ===");
+    let alice = create_user(
+        &pool,
+        CreateUser {
+            name: "Alice".to_string(),
+            email: "alice@example.com".to_string(),
+        },
+    )
+    .await?;
+    println!("Created user: {:?}", alice);
+    let bob = create_user(
+        &pool,
+        CreateUser {
+            name: "Bob".to_string(),
+            email: "bob@example.com".to_string(),
+        },
+    )
+    .await?;
+    println!("Created user: {:?}", bob);
+
+    println!("\n=== READ ===");
+    let user = get_user(&pool, alice.id).await?;
+    println!("Get user {}: {:?}", alice.id, user);
+
+    let nonexistent = get_user(&pool, 999).await?;
+    println!("Get user 999: {:?}", nonexistent);
+
+    println!("\n=== LIST ===");
+    let users = list_users(&pool).await?;
+    println!("All users:");
+    for user in &users {
+        println!("  - {:?}", user);
+    }
+
+    println!("\n=== UPDATE ===");
+    let updated = update_user(&pool, alice.id, "Alice Smith".to_string()).await?;
+    println!("Updated user: {:?}", updated);
+
+    let user = get_user(&pool, alice.id).await?;
+    println!("After update: {:?}", user);
+
+    println!("\n=== DELETE ===");
+    let deleted = delete_user(&pool, bob.id).await?;
+    println!("Deleted user {}: {}", bob.id, deleted);
+
+    let user = get_user(&pool, bob.id).await?;
+    println!("After delete: {:?}", user);
+
+    println!("\n=== FINAL STATE ===");
+    let users = list_users(&pool).await?;
+    println!("Remaining users:");
+    for user in &users {
+        println!("  - {:?}", user);
+    }
+
+    println!("\n=== ERROR HANDLING ===");
+    match create_user(
+        &pool,
+        CreateUser {
+            name: "Alice Clone".to_string(),
+            email: "alice@example.com".to_string(),
+        },
+    )
+    .await
+    {
+        Ok(user) => println!("Created: {:?}", user),
+        Err(e) => println!("Error (expected - duplicate email): {}", e),
+    }
+
+    println!("\nDemo complete!");
+    Ok(())
 }
