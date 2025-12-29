@@ -506,31 +506,31 @@ Build habits of observing your programs with these tools:
 
 **4.2 Caching**
 
-- [ ] Read theory
-- [ ] Complete Lab 3: Redis Basics
-  - [ ] Read README and understand requirements
-  - [ ] Implementation
-    - [ ] Connect to Redis server
-    - [ ] Implement `demo_strings()` - GET, SET, DEL operations
-    - [ ] Implement `demo_ttl()` - SET with expiration, check TTL
-    - [ ] Implement `demo_hash()` - HSET, HGET, HGETALL operations
-    - [ ] Implement `demo_list()` - LPUSH, RPOP, LRANGE operations
-    - [ ] Use async connection with `redis::AsyncCommands`
-  - [ ] Run `cargo test` and pass all tests
-  - [ ] Compare with solution
-- [ ] Complete Lab 4: Cache Patterns
-  - [ ] Read README and understand requirements
-  - [ ] Implementation
-    - [ ] Implement cache-aside pattern
-    - [ ] Support TTL (expiration) using `Instant` for timestamps
-    - [ ] Handle cache misses by fetching from "database"
-    - [ ] Implement `Cache::get()` - check expiration, update stats
-    - [ ] Implement `Cache::set()` - store with TTL
-    - [ ] Implement `get_user_cached()` - cache first, fallback to database
-    - [ ] Track cache hit/miss statistics with `CacheStats`
-    - [ ] Calculate and display hit rate
-  - [ ] Run `cargo test` and pass all tests
-  - [ ] Compare with solution
+- [x] Read theory
+- [x] Complete Lab 3: Redis Basics
+  - [x] Read README and understand requirements
+  - [x] Implementation
+    - [x] Connect to Redis server
+    - [x] Implement `demo_strings()` - GET, SET, DEL operations
+    - [x] Implement `demo_ttl()` - SET with expiration, check TTL
+    - [x] Implement `demo_hash()` - HSET, HGET, HGETALL operations
+    - [x] Implement `demo_list()` - LPUSH, RPOP, LRANGE operations
+    - [x] Use async connection with `redis::AsyncCommands`
+  - [x] Run `cargo test` and pass all tests
+  - [x] Compare with solution
+- [x] Complete Lab 4: Cache Patterns
+  - [x] Read README and understand requirements
+  - [x] Implementation
+    - [x] Implement cache-aside pattern
+    - [x] Support TTL (expiration) using `Instant` for timestamps
+    - [x] Handle cache misses by fetching from "database"
+    - [x] Implement `Cache::get()` - check expiration, update stats
+    - [x] Implement `Cache::set()` - store with TTL
+    - [x] Implement `get_user_cached()` - cache first, fallback to database
+    - [x] Track cache hit/miss statistics with `CacheStats`
+    - [x] Calculate and display hit rate
+  - [x] Run `cargo test` and pass all tests
+  - [x] Compare with solution
 
 ---
 
@@ -538,7 +538,7 @@ Build habits of observing your programs with these tools:
 
 **5.1 Messaging**
 
-- [ ] Read theory
+- [x] Read theory
 - [ ] Complete Lab 1: Channel Patterns
   - [ ] Read README and understand requirements
   - [ ] Implementation
