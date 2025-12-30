@@ -69,15 +69,25 @@ struct Queue {
 impl Queue {
     fn new(visibility_timeout: Duration) -> Self {
         // TODO: Initialize queue
-
-        todo!("Implement Queue::new")
+        Queue {
+            pending: VecDeque::new(),
+            processing: HashMap::new(),
+            visibility_timeout,
+        }
     }
 
     /// Add message to queue
     fn enqueue(&mut self, payload: String) -> String {
         // TODO: Create message with UUID, add to pending
-
-        todo!("Implement Queue::enqueue")
+        let id = Uuid::new_v4().to_string()[..8].to_string();
+        let msg = Message {
+            id: id.clone(),
+            payload,
+            attempts: 0,
+            dequeued_at: None,
+        };
+        self.pending.push_back(msg);
+        id
     }
 
     /// Get next message (makes it invisible)
@@ -85,39 +95,122 @@ impl Queue {
         // TODO: Move message from pending to processing
         // Set dequeued_at and increment attempts
 
-        todo!("Implement Queue::dequeue")
+        let mut msg = self.pending.pop_front()?;
+        msg.attempts += 1;
+        msg.dequeued_at = Some(Instant::now());
+
+        let id = msg.id.clone();
+        self.processing.insert(id, msg.clone());
+        Some(msg)
     }
 
     /// Acknowledge message (remove from processing)
     fn acknowledge(&mut self, id: &str) -> bool {
         // TODO: Remove message from processing
-
-        todo!("Implement Queue::acknowledge")
+        self.processing.remove(id).is_some()
     }
 
     /// Check for timed out messages and redeliver
     fn check_timeouts(&mut self) {
         // TODO: Move timed-out messages back to pending
+        let now = Instant::now();
+        let expired_ids: Vec<String> = self
+            .processing
+            .iter()
+            .filter(|(_, msg)| {
+                if let Some(dequeued_at) = msg.dequeued_at {
+                    now.duration_since(dequeued_at) > self.visibility_timeout
+                } else {
+                    false
+                }
+            })
+            .map(|(id, _)| id.clone())
+            .collect();
 
-        todo!("Implement Queue::check_timeouts")
+        for id in expired_ids {
+            if let Some(mut msg) = self.processing.remove(&id) {
+                msg.dequeued_at = None;
+                self.pending.push_back(msg);
+            }
+        }
     }
 
     /// Get queue statistics
     fn stats(&self) -> (usize, usize) {
         // TODO: Return (pending_count, processing_count)
 
-        todo!("Implement Queue::stats")
+        (self.pending.len(), self.processing.len())
     }
 }
 
 #[tokio::main]
 async fn main() {
     // TODO: Implement demo
-    // 1. Create queue
-    // 2. Enqueue messages
-    // 3. Process some with ack
-    // 4. Process some without ack
-    // 5. Show redelivery after timeout
+    println!("=== Simple Queue Demo ===\n");
 
-    todo!("Implement main")
+    // 1. Create queue
+    let mut queue = Queue::new(Duration::from_secs(2));
+    // 2. Enqueue messages
+    println!("Enqueuing 5 messages...");
+    for i in 1..=5 {
+        let payload = format!("msg-{}", i);
+        let id = queue.enqueue(payload.clone());
+        println!("Enqueued: {} ({})", payload, id);
+    }
+
+    let (pending, processing) = queue.stats();
+    println!("Stats: pending={}, processing={}\n", pending, processing);
+
+    // 3. Process some with ack
+    println!("Worker processing...");
+    for _ in 0..2 {
+        if let Some(msg) = queue.dequeue() {
+            println!("Dequeued: {} (attempt {})", msg.payload, msg.attempts);
+            tokio::time::sleep(Duration::from_millis(100)).await;
+            queue.acknowledge(&msg.id);
+            println!("Processed and acknowledged: {}", msg.payload);
+        }
+    }
+    let (pending, processing) = queue.stats();
+    println!("Stats: pending={}, processing={}\n", pending, processing);
+
+    // 4. Process some without ack
+    println!("Simulating failure (no ack)...");
+    if let Some(msg) = queue.dequeue() {
+        println!("Dequeued: {} (attempt {})", msg.payload, msg.attempts);
+        println!("(Worker crashed, no ack)");
+    }
+    let (pending, processing) = queue.stats();
+    println!("Stats: pending={}, processing={}\n", pending, processing);
+    println!("Waiting for visibility timeout...");
+    tokio::time::sleep(Duration::from_secs(3)).await;
+
+    queue.check_timeouts();
+    let (pending, processing) = queue.stats();
+    println!(
+        "\nstats after check timeout: pending={}, processing={}",
+        pending, processing
+    );
+    // 5. Show redelivery after timeout
+    println!("After timeout, message redelivered:");
+    if let Some(msg) = queue.dequeue() {
+        println!("Dequeued: {} (attempt {})", msg.payload, msg.attempts);
+        queue.acknowledge(&msg.id);
+    }
+    let (pending, processing) = queue.stats();
+    println!(
+        "\nstats after redelivered: pending={}, processing={}",
+        pending, processing
+    );
+
+    println!("\nDraining remaining messages...");
+    while let Some(msg) = queue.dequeue() {
+        println!("Dequeued: {} (attempt {})", msg.payload, msg.attempts);
+        queue.acknowledge(&msg.id);
+    }
+    let (pending, processing) = queue.stats();
+    println!(
+        "\nFinal stats: pending={}, processing={}",
+        pending, processing
+    );
 }

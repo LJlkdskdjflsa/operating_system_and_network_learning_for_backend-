@@ -539,28 +539,28 @@ Build habits of observing your programs with these tools:
 **5.1 Messaging**
 
 - [x] Read theory
-- [ ] Complete Lab 1: Channel Patterns
-  - [ ] Read README and understand requirements
-  - [ ] Implementation
-    - [ ] Implement `demo_fan_in()` - multiple producers → single consumer (`mpsc`)
-    - [ ] Implement `demo_fan_out()` - single producer → multiple consumers (`broadcast`)
-    - [ ] Implement `demo_worker_pool()` - distribute jobs across workers sharing receiver
-    - [ ] Handle graceful shutdown (no hanging)
-    - [ ] Show proper use of channel cloning and dropping
-  - [ ] Run `cargo test` and pass all tests
-  - [ ] Compare with solution
-- [ ] Complete Lab 2: Simple Message Queue
-  - [ ] Read README and understand requirements
-  - [ ] Implementation
-    - [ ] Implement `Queue` struct with pending and processing queues
-    - [ ] Implement `enqueue(payload)` - add message with UUID
-    - [ ] Implement `dequeue()` - get next message, move to processing
-    - [ ] Implement `acknowledge(id)` - remove from processing
-    - [ ] Implement `check_timeouts()` - redeliver unacknowledged messages
-    - [ ] Track message attempts
-    - [ ] Demonstrate unacked messages are redelivered
-  - [ ] Run `cargo test` and pass all tests
-  - [ ] Compare with solution
+- [x] Complete Lab 1: Channel Patterns
+  - [x] Read README and understand requirements
+  - [x] Implementation
+    - [x] Implement `demo_fan_in()` - multiple producers → single consumer (`mpsc`)
+    - [x] Implement `demo_fan_out()` - single producer → multiple consumers (`broadcast`)
+    - [x] Implement `demo_worker_pool()` - distribute jobs across workers sharing receiver
+    - [x] Handle graceful shutdown (no hanging)
+    - [x] Show proper use of channel cloning and dropping
+  - [x] Run `cargo test` and pass all tests
+  - [x] Compare with solution
+- [x] Complete Lab 2: Simple Message Queue
+  - [x] Read README and understand requirements
+  - [x] Implementation
+    - [x] Implement `Queue` struct with pending and processing queues
+    - [x] Implement `enqueue(payload)` - add message with UUID
+    - [x] Implement `dequeue()` - get next message, move to processing
+    - [x] Implement `acknowledge(id)` - remove from processing
+    - [x] Implement `check_timeouts()` - redeliver unacknowledged messages
+    - [x] Track message attempts
+    - [x] Demonstrate unacked messages are redelivered
+  - [x] Run `cargo test` and pass all tests
+  - [x] Compare with solution
 
 **5.2 Resilience Patterns**
 

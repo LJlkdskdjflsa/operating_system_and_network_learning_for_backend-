@@ -43,8 +43,9 @@
 //! - [ ] Worker pool distributes work evenly
 //! - [ ] Clean shutdown (no hanging)
 
-use tokio::sync::{mpsc, broadcast};
 use std::time::Duration;
+use std::sync::Arc;
+use tokio::sync::{broadcast, mpsc, Mutex};
 
 // ============================================================
 // TODO: Implement channel patterns
@@ -54,33 +55,93 @@ use std::time::Duration;
 async fn demo_fan_in() {
     // TODO: Implement
     // 1. Create mpsc channel
+    let (tx, mut rx) = mpsc::channel(8);
+    let mut producers = Vec::new();
     // 2. Spawn multiple producer tasks
+    for i in 0..100 {
+        let tx = tx.clone();
+        producers.push(tokio::spawn(async move {
+            println!("Producer {} sending...", i);
+            let _ = tx.send(format!("from producer {}", i)).await;
+        }));
+    }
+    drop(tx);
     // 3. Single consumer loop
+    let consumer = tokio::spawn(async move {
+        while let Some(message) = rx.recv().await {
+            println!("Consumer received: {}", message);
+        }
+    });
     // 4. Wait for all producers to finish
-
-    todo!("Implement demo_fan_in")
+    for producer in producers {
+        let _ = producer.await;
+    }
+    let _ = consumer.await;
 }
 
 /// Fan-out: Single producer sends to multiple consumers
 async fn demo_fan_out() {
     // TODO: Implement
     // 1. Create broadcast channel
+    let (tx, _) = broadcast::channel(8);
+    let mut subscribers = Vec::new();
     // 2. Spawn multiple subscriber tasks
-    // 3. Send messages from main task
-    // 4. Wait for subscribers to process
+    for i in 0..10 {
+        let mut rx = tx.subscribe();
+        subscribers.push(tokio::spawn(async move {
+            match rx.recv().await {
+                Ok(message) => println!("Subscriber {} received: {}", i, message),
+                Err(err) => eprintln!("Subscriber {} error: {}", i, err),
+            }
+        }));
+    }
 
-    todo!("Implement demo_fan_out")
+    // 3. Send messages from main task
+    println!("Broadcasting event...");
+    let _ = tx.send("event");
+    // 4. Wait for subscribers to process
+    for subscriber in subscribers {
+        let _ = subscriber.await;
+    }
 }
 
 /// Worker pool: Distribute jobs across workers
 async fn demo_worker_pool() {
-    // TODO: Implement
-    // 1. Create job channel
-    // 2. Spawn worker tasks (each receives from same channel)
-    // 3. Submit jobs
-    // 4. Wait for completion
+    let worker_count = 3;
+    let job_count = 10;
+    let (tx, rx) = mpsc::channel(8);
+    let rx = Arc::new(Mutex::new(rx));
+    let mut workers = Vec::new();
 
-    todo!("Implement demo_worker_pool")
+    println!("Submitting {} jobs to {} workers...", job_count, worker_count);
+
+    for worker_id in 0..worker_count {
+        let rx = Arc::clone(&rx);
+        workers.push(tokio::spawn(async move {
+            loop {
+                let job = {
+                    let mut guard = rx.lock().await;
+                    guard.recv().await
+                };
+                match job {
+                    Some(job_id) => {
+                        println!("Worker {} processing job {}", worker_id, job_id);
+                        tokio::time::sleep(Duration::from_millis(50)).await;
+                    }
+                    None => break,
+                }
+            }
+        }));
+    }
+
+    for job_id in 0..job_count {
+        let _ = tx.send(job_id).await;
+    }
+    drop(tx);
+
+    for worker in workers {
+        let _ = worker.await;
+    }
 }
 
 #[tokio::main]
